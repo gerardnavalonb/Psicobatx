@@ -226,40 +226,50 @@ class MemoryHackApp {
 
     // ============================================================
     // NEURAL NETWORK: Node & Connection Definitions
+    // Biological Neuron Topology (Dendrites -> Soma -> Axon -> Synapses)
+    // ViewBox: 0 0 960 420
     // ============================================================
-    // Node positions for SVG viewBox 400 x 640
     this.nodeDefinitions = [
-      { id: 1,  label: 'Memòria de treball',      short: ['Memòria de', 'treball'],      x: 200, y: 45  },
-      { id: 2,  label: 'Capacitat limitada',       short: ['Capacitat', 'limitada'],      x: 90,  y: 130 },
-      { id: 3,  label: 'Llei de Miller (7±2)',     short: ['Miller', '(7±2)'],            x: 310, y: 130 },
-      { id: 4,  label: 'Chunking',                 short: ['Chunking'],                   x: 85,  y: 220 },
-      { id: 5,  label: 'Càrrega cognitiva',        short: ['Càrrega', 'cognitiva'],       x: 270, y: 220 },
-      { id: 6,  label: 'Càrrega intrínseca',       short: ['Intrínseca'],                 x: 60,  y: 315 },
-      { id: 7,  label: 'Càrrega extrínseca',       short: ['Extrínseca'],                 x: 200, y: 315 },
-      { id: 8,  label: 'Càrrega rellevant',        short: ['Rellevant'],                  x: 340, y: 315 },
-      { id: 9,  label: 'Atenció i distraccions',   short: ['Atenció &', 'Distrac.'],      x: 130, y: 405 },
-      { id: 10, label: 'Exemples resolts',         short: ['Exemples', 'resolts'],        x: 315, y: 405 },
-      { id: 11, label: 'Col·laboració',            short: ['Col·lab.'],                   x: 70,  y: 495 },
-      { id: 12, label: 'Generació activa',         short: ['Generació', 'activa'],        x: 255, y: 495 },
-      { id: 13, label: "Gestió de l'estrès",       short: ["Estrès"],                     x: 100, y: 580 },
-      { id: 14, label: 'Aplicació real',           short: ['Aplicació', 'real'],          x: 265, y: 580 },
+      // DENDRITES (Input & Working Memory)
+      { id: 1,  emoji: "🧠", label: "Memòria de treball",      short: ["Memòria de", "treball"],       x: 65,  y: 205, zone: "dendrite" },
+      { id: 2,  emoji: "🛑", label: "Capacitat limitada",       short: ["Capacitat", "limitada"],       x: 185, y: 205, zone: "dendrite" },
+      { id: 3,  emoji: "🔢", label: "Llei de Miller (7±2)",     short: ["Miller", "(7±2)"],             x: 295, y: 155, zone: "dendrite" },
+      { id: 4,  emoji: "🧩", label: "Chunking (Agrupació)",     short: ["Chunking", "(Agrupació)"],     x: 145, y: 325, zone: "dendrite" },
+      { id: 6,  emoji: "🧱", label: "Càrrega intrínseca",       short: ["Càrrega", "intrínseca"],       x: 280, y: 325, zone: "dendrite" },
+      { id: 7,  emoji: "🚨", label: "Càrrega extrínseca",       short: ["Càrrega", "extrínseca"],       x: 145, y: 85,  zone: "dendrite" },
+      { id: 9,  emoji: "🔕", label: "Atenció & Distraccions",   short: ["Atenció &", "Distraccions"],   x: 280, y: 80,  zone: "dendrite" },
+
+      // SOMA & NUCLI (Central Processing)
+      { id: 5,  emoji: "⚖️", label: "Càrrega cognitiva",        short: ["Càrrega", "cognitiva"],        x: 405, y: 215, zone: "soma" },
+      { id: 8,  emoji: "🚀", label: "Càrrega rellevant",        short: ["Càrrega", "rellevant"],        x: 505, y: 215, zone: "soma" },
+
+      // AXON & MYELIN (Strategies & Active Learning)
+      { id: 10, emoji: "📈", label: "Exemples resolts",         short: ["Exemples", "resolts"],         x: 625, y: 140, zone: "axon" },
+      { id: 11, emoji: "👥", label: "Col·laboració",            short: ["Aprendre en", "parella"],      x: 750, y: 140, zone: "axon" },
+      { id: 12, emoji: "✍️", label: "Generació activa",         short: ["Autoexplicar", "i escriure"],  x: 625, y: 290, zone: "axon" },
+      { id: 13, emoji: "😌", label: "Gestió de l'estrès",       short: ["Control", "de l'estrès"],      x: 750, y: 290, zone: "axon" },
+
+      // TERMINAL BOUTON (Long-term Storage Application)
+      { id: 14, emoji: "🎯", label: "Aplicació real",           short: ["Pla d'estudi", "personal"],    x: 880, y: 215, zone: "terminal" },
     ];
 
-    // Connection pairs [a, b] – always stored as min-max key
+    // Connection pairs [a, b]
     this.connectionDefinitions = [
       [1, 2],   // Memòria ↔ Capacitat limitada
       [1, 3],   // Memòria ↔ Miller
       [2, 4],   // Capacitat ↔ Chunking
-      [2, 5],   // Capacitat ↔ Càrrega cognitiva
+      [2, 5],   // Capacitat ↔ Càrrega cognitiva (soma)
       [3, 5],   // Miller ↔ Càrrega cognitiva
       [5, 6],   // Càrrega ↔ Intrínseca
       [5, 7],   // Càrrega ↔ Extrínseca
-      [5, 8],   // Càrrega ↔ Rellevant
-      [7, 9],   // Extrínseca ↔ Atenció
+      [7, 9],   // Extrínseca ↔ Atenció & Distraccions
+      [5, 8],   // Càrrega ↔ Rellevant (nucli actiu)
+      [8, 10],  // Rellevant ↔ Exemples resolts
       [8, 12],  // Rellevant ↔ Generació activa
-      [10, 8],  // Exemples resolts ↔ Rellevant
+      [10, 11], // Exemples resolts ↔ Col·laboració
       [11, 12], // Col·laboració ↔ Generació activa
-      [13, 9],  // Estrès ↔ Atenció
+      [9, 13],  // Atenció ↔ Gestió Estrès
+      [12, 14], // Generació activa ↔ Aplicació real
     ];
 
     this.init();
@@ -1324,16 +1334,16 @@ ${d.concept}
     this._nodeToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
-  toggleNeuralPanel() {
-    const panel = document.getElementById('neural-panel');
-    const backdrop = document.getElementById('neural-backdrop');
-    if (!panel) return;
-    panel.classList.toggle('open');
-    backdrop.classList.toggle('open');
-    if (panel.classList.contains('open')) {
-      this.renderNeuralNet();
-      this.updateNeuralStats();
+  scrollToNeuron() {
+    const board = document.getElementById('persistent-neural-board');
+    if (board) {
+      board.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.playSynthSound('click');
     }
+  }
+
+  toggleNeuralPanel() {
+    this.scrollToNeuron();
   }
 
   updateNeuralStats() {
@@ -1351,7 +1361,7 @@ ${d.concept}
 
     // Completion screen stats
     setEl('nn-final-nodes', `${nodesUnlocked}/14`);
-    setEl('nn-final-conns', `${connCount}/13`);
+    setEl('nn-final-conns', `${connCount}/15`);
     setEl('nn-final-rigor', rigor !== null ? `${rigor}%` : '—');
   }
 
@@ -1361,119 +1371,268 @@ ${d.concept}
 
     const nn = this.state.neuralNet;
 
-    // Clear
+    // Clear previous elements
     while (svg.firstChild) svg.removeChild(svg.firstChild);
 
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const mk = (tag) => document.createElementNS(SVG_NS, tag);
 
-    // ── Defs (glow filters) ─────────────────────────────────────
+    // ── 1. DEFS & FILTERS ──────────────────────────────────────────
     const defs = mk('defs');
     defs.innerHTML = `
       <filter id="glow-blue" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
       <filter id="glow-gold" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-        <feColorMatrix in="blur" type="matrix"
-          values="1.2 0.5 0 0 0  0.8 0.8 0 0 0  0 0 0 0 0  0 0 0 0.9 0" result="c"/>
-        <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>`;
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-soma" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      </filter>
+
+      <linearGradient id="grad-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fbbf24"/>
+        <stop offset="100%" stop-color="#d97706"/>
+      </linearGradient>
+
+      <linearGradient id="grad-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+
+      <radialGradient id="grad-soma" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.6"/>
+        <stop offset="60%" stop-color="#e0f2fe" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0"/>
+      </radialGradient>
+    `;
     svg.appendChild(defs);
 
-    // ── Connections ──────────────────────────────────────────────
+    // ── 2. ANATOMICAL NEURON BACKGROUND (BIOLOGICAL SILHOUETTE) ────
+    const bgGroup = mk('g');
+    bgGroup.setAttribute('class', 'neuron-anatomy-bg');
+
+    // Section header labels in SVG
+    const headers = [
+      { text: "🌿 DENDRITES (Recepció d'estímuls)", x: 190, y: 28 },
+      { text: "🧬 SOMA I NUCLI (Processament)", x: 450, y: 28 },
+      { text: "⚡ AXÓ I SINAPSIS (Consolidació a llarg termini)", x: 740, y: 28 }
+    ];
+    headers.forEach(h => {
+      const t = mk('text');
+      t.setAttribute('x', h.x);
+      t.setAttribute('y', h.y);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', '10.5');
+      t.setAttribute('font-weight', '800');
+      t.setAttribute('letter-spacing', '0.04em');
+      t.setAttribute('fill', '#94a3b8');
+      t.textContent = h.text;
+      bgGroup.appendChild(t);
+    });
+
+    // Dendrite background branches
+    const dendritesBg = mk('path');
+    dendritesBg.setAttribute('d', `
+      M 400 215 C 320 200, 240 100, 145 85
+      M 400 215 C 290 205, 185 205, 65 205
+      M 400 215 C 320 230, 240 310, 145 325
+      M 280 80  C 200 80,  150 140, 65 205
+      M 280 325 C 200 325, 150 260, 65 205
+    `);
+    dendritesBg.setAttribute('stroke', '#e0f2fe');
+    dendritesBg.setAttribute('stroke-width', '10');
+    dendritesBg.setAttribute('stroke-linecap', 'round');
+    dendritesBg.setAttribute('fill', 'none');
+    bgGroup.appendChild(dendritesBg);
+
+    // Central Soma / Cell Body organic shape
+    const somaBg = mk('ellipse');
+    somaBg.setAttribute('cx', '455');
+    somaBg.setAttribute('cy', '215');
+    somaBg.setAttribute('rx', '95');
+    somaBg.setAttribute('ry', '75');
+    somaBg.setAttribute('fill', 'url(#grad-soma)');
+    somaBg.setAttribute('filter', 'url(#glow-soma)');
+    bgGroup.appendChild(somaBg);
+
+    // Axon Main Cable (running from soma to terminal)
+    const axonCable = mk('path');
+    axonCable.setAttribute('d', 'M 520 215 C 640 215, 740 215, 870 215');
+    axonCable.setAttribute('class', 'neuron-axon-cable');
+    bgGroup.appendChild(axonCable);
+
+    // Myelin Sheaths (translucent rounded rectangles protecting axon)
+    const myelinPositions = [570, 680, 790];
+    myelinPositions.forEach(mx => {
+      const rect = mk('rect');
+      rect.setAttribute('x', mx);
+      rect.setAttribute('y', '204');
+      rect.setAttribute('width', '80');
+      rect.setAttribute('height', '22');
+      rect.setAttribute('rx', '11');
+      rect.setAttribute('fill', '#e0f2fe');
+      rect.setAttribute('stroke', '#bae6fd');
+      rect.setAttribute('stroke-width', '1.5');
+      rect.setAttribute('opacity', '0.75');
+      bgGroup.appendChild(rect);
+    });
+
+    // Terminal Synaptic Arborization (Branches leading to Node 14)
+    const terminalBranches = mk('path');
+    terminalBranches.setAttribute('d', `
+      M 750 140 C 820 160, 840 200, 880 215
+      M 750 290 C 820 270, 840 230, 880 215
+    `);
+    terminalBranches.setAttribute('stroke', '#e0f2fe');
+    terminalBranches.setAttribute('stroke-width', '8');
+    terminalBranches.setAttribute('stroke-linecap', 'round');
+    terminalBranches.setAttribute('fill', 'none');
+    bgGroup.appendChild(terminalBranches);
+
+    svg.appendChild(bgGroup);
+
+    // ── 3. SYNAPTIC CONNECTIONS (ORGANIC CURVED BÉZIERS) ───────────
+    const connsGroup = mk('g');
+    connsGroup.setAttribute('class', 'neuron-connections-layer');
+
     this.connectionDefinitions.forEach(([a, b]) => {
       const nA = this.nodeDefinitions.find(n => n.id === a);
       const nB = this.nodeDefinitions.find(n => n.id === b);
+      if (!nA || !nB) return;
+
       const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
       const isActive = nn.connections.has(key);
+      const nodeAFirst = nn.nodes[a]?.firstTry;
+      const nodeBFirst = nn.nodes[b]?.firstTry;
+      const isGoldSynapse = isActive && nodeAFirst && nodeBFirst;
 
-      const line = mk('line');
-      line.setAttribute('x1', nA.x); line.setAttribute('y1', nA.y);
-      line.setAttribute('x2', nB.x); line.setAttribute('y2', nB.y);
+      // Smooth Organic Cubic Bézier Path
+      const dx = nB.x - nA.x;
+      const cx1 = nA.x + dx * 0.45;
+      const cy1 = nA.y;
+      const cx2 = nA.x + dx * 0.55;
+      const cy2 = nB.y;
+
+      const path = mk('path');
+      path.setAttribute('d', `M ${nA.x} ${nA.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${nB.x} ${nB.y}`);
+      path.setAttribute('class', isActive ? 'neuron-conn-curved neuron-conn-active' : 'neuron-conn-curved neuron-conn-inactive');
 
       if (isActive) {
-        line.setAttribute('stroke', '#0284c7');
-        line.setAttribute('stroke-width', '2');
-        line.setAttribute('opacity', '0.85');
-        line.setAttribute('class', 'nn-conn-active');
-      } else {
-        line.setAttribute('stroke', '#cbd5e1');
-        line.setAttribute('stroke-width', '1');
-        line.setAttribute('stroke-dasharray', '4,4');
-        line.setAttribute('opacity', '0.35');
+        path.setAttribute('stroke', isGoldSynapse ? '#f59e0b' : '#0284c7');
+        path.setAttribute('stroke-width', isGoldSynapse ? '3.2' : '2.6');
+        if (isGoldSynapse) {
+          path.setAttribute('filter', 'url(#glow-gold)');
+        }
       }
-      svg.appendChild(line);
-    });
 
-    // ── Nodes ────────────────────────────────────────────────────
+      connsGroup.appendChild(path);
+    });
+    svg.appendChild(connsGroup);
+
+    // ── 4. CONCEPT NODES (SYNAPSE HUBS) ────────────────────────────
+    const nodesGroup = mk('g');
+    nodesGroup.setAttribute('class', 'neuron-nodes-layer');
+
     this.nodeDefinitions.forEach(nodeDef => {
       const nodeState = nn.nodes[nodeDef.id];
       const isUnlocked = nodeState?.unlocked;
       const isFirstTry = nodeState?.firstTry;
+      const isSoma = nodeDef.zone === 'soma';
+      const radius = isSoma ? 21 : 18;
 
       const g = mk('g');
-      g.setAttribute('class', 'nn-node-group');
+      g.setAttribute('class', 'neuron-node-group');
+      g.setAttribute('title', `${nodeDef.label} (${isUnlocked ? 'Consolidat' : 'Pendent'})`);
+      g.onclick = () => {
+        const statusText = isUnlocked 
+          ? (isFirstTry ? 'Consolidat al 1r intent (Rigor excel·lent)' : 'Consolidat després de revisió')
+          : 'Pendent de consolidar: supera el repte corresponent per activar aquesta sinapsi!';
+        this.showToast(`🧠 ${nodeDef.label}: ${statusText}`);
+      };
 
+      // Pulsing outer halo when unlocked
       if (isUnlocked) {
-        // Glow ring
         const ring = mk('circle');
-        ring.setAttribute('cx', nodeDef.x); ring.setAttribute('cy', nodeDef.y);
-        ring.setAttribute('r', '25');
-        ring.setAttribute('fill', isFirstTry ? 'rgba(245,158,11,0.18)' : 'rgba(2,132,199,0.14)');
-        ring.setAttribute('class', 'nn-glow-ring');
+        ring.setAttribute('cx', nodeDef.x);
+        ring.setAttribute('cy', nodeDef.y);
+        ring.setAttribute('r', radius + 11);
+        ring.setAttribute('fill', isFirstTry ? 'rgba(245, 158, 11, 0.22)' : 'rgba(2, 132, 199, 0.2)');
+        ring.setAttribute('class', 'neuron-glow-ring');
         g.appendChild(ring);
       }
 
-      // Main circle
+      // Main Node Circle
       const circle = mk('circle');
-      circle.setAttribute('cx', nodeDef.x); circle.setAttribute('cy', nodeDef.y);
-      circle.setAttribute('r', '17');
+      circle.setAttribute('cx', nodeDef.x);
+      circle.setAttribute('cy', nodeDef.y);
+      circle.setAttribute('r', radius);
+      circle.setAttribute('class', isUnlocked ? 'neuron-node-circle active' : 'neuron-node-circle inactive');
+
       if (isUnlocked) {
-        circle.setAttribute('fill', isFirstTry ? '#f59e0b' : '#0284c7');
-        circle.setAttribute('stroke', isFirstTry ? '#d97706' : '#0369a1');
-        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('fill', isFirstTry ? 'url(#grad-gold)' : 'url(#grad-blue)');
+        circle.setAttribute('stroke', isFirstTry ? '#b45309' : '#0369a1');
+        circle.setAttribute('stroke-width', '2.2');
         circle.setAttribute('filter', isFirstTry ? 'url(#glow-gold)' : 'url(#glow-blue)');
-        circle.setAttribute('class', 'nn-node-circle active');
       } else {
-        circle.setAttribute('fill', '#f8fafc');
+        circle.setAttribute('fill', '#ffffff');
         circle.setAttribute('stroke', '#cbd5e1');
-        circle.setAttribute('stroke-width', '1.5');
+        circle.setAttribute('stroke-width', '1.8');
         circle.setAttribute('stroke-dasharray', '4,3');
-        circle.setAttribute('class', 'nn-node-circle inactive');
       }
       g.appendChild(circle);
 
-      // Node ID number (inside circle)
-      const numTxt = mk('text');
-      numTxt.setAttribute('x', nodeDef.x); numTxt.setAttribute('y', nodeDef.y + 4);
-      numTxt.setAttribute('text-anchor', 'middle');
-      numTxt.setAttribute('font-size', '9');
-      numTxt.setAttribute('font-weight', '800');
-      numTxt.setAttribute('font-family', 'system-ui, sans-serif');
-      numTxt.setAttribute('fill', isUnlocked ? '#ffffff' : '#94a3b8');
-      numTxt.textContent = nodeDef.id;
-      g.appendChild(numTxt);
+      // Node Icon / Emoji inside
+      const iconTxt = mk('text');
+      iconTxt.setAttribute('x', nodeDef.x);
+      iconTxt.setAttribute('y', nodeDef.y + (isUnlocked ? 5 : 4));
+      iconTxt.setAttribute('text-anchor', 'middle');
+      iconTxt.setAttribute('font-size', isUnlocked ? '13' : '10.5');
+      iconTxt.setAttribute('font-weight', '800');
+      iconTxt.setAttribute('font-family', 'system-ui, sans-serif');
+      iconTxt.setAttribute('fill', isUnlocked ? '#ffffff' : '#94a3b8');
+      iconTxt.textContent = isUnlocked ? nodeDef.emoji : nodeDef.id;
+      g.appendChild(iconTxt);
 
-      // Label lines below node
-      const labelColor = isUnlocked ? (isFirstTry ? '#d97706' : '#0369a1') : '#94a3b8';
-      const labelWeight = isUnlocked ? '700' : '400';
+      // Label Pill Background
+      const pillW = 86;
+      const pillH = 26;
+      const pillX = nodeDef.x - (pillW / 2);
+      const pillY = nodeDef.y + radius + 7;
+
+      const pillRect = mk('rect');
+      pillRect.setAttribute('x', pillX);
+      pillRect.setAttribute('y', pillY);
+      pillRect.setAttribute('width', pillW);
+      pillRect.setAttribute('height', pillH);
+      pillRect.setAttribute('rx', '6');
+      pillRect.setAttribute('fill', '#ffffff');
+      pillRect.setAttribute('stroke', isUnlocked ? (isFirstTry ? '#fde68a' : '#bae6fd') : '#e2e8f0');
+      pillRect.setAttribute('stroke-width', '1.2');
+      pillRect.setAttribute('box-shadow', '0 1px 3px rgba(0,0,0,0.05)');
+      g.appendChild(pillRect);
+
+      // Label text (2 lines)
+      const labelColor = isUnlocked ? '#0f172a' : '#94a3b8';
       nodeDef.short.forEach((line, i) => {
         const lbl = mk('text');
         lbl.setAttribute('x', nodeDef.x);
-        lbl.setAttribute('y', nodeDef.y + 30 + (i * 10));
+        lbl.setAttribute('y', pillY + 11 + (i * 10));
         lbl.setAttribute('text-anchor', 'middle');
-        lbl.setAttribute('font-size', '7.5');
-        lbl.setAttribute('font-weight', labelWeight);
+        lbl.setAttribute('font-size', '8');
+        lbl.setAttribute('font-weight', isUnlocked ? '800' : '500');
         lbl.setAttribute('font-family', 'system-ui, sans-serif');
         lbl.setAttribute('fill', labelColor);
         lbl.textContent = line;
         g.appendChild(lbl);
       });
 
-      svg.appendChild(g);
+      nodesGroup.appendChild(g);
     });
+
+    svg.appendChild(nodesGroup);
   }
 }
 

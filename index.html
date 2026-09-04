@@ -23,7 +23,7 @@
         <div class="xp-badge" id="xp-display" title="Punts d'aprenentatge">
           <span>⚡</span> <span id="xp-points">0</span> XP
         </div>
-        <button class="neural-btn" id="neural-btn" onclick="app.toggleNeuralPanel()" title="Consulta la teva xarxa de coneixement">
+        <button class="neural-btn" id="neural-btn" onclick="app.scrollToNeuron()" title="Ves a la teva neurona del coneixement">
           🧠 <span class="nn-counter"><span id="nn-header-nodes">0</span>/14</span>
         </button>
         <button class="sound-toggle" id="sound-btn" onclick="app.toggleSound()" title="Activar/Desactivar efectes de so">
@@ -869,8 +869,8 @@
       <div class="card" style="border-color: #7dd3fc; background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
           <h3 style="color: #0369a1; font-size: 1.3rem; margin: 0;">🧠 LA TEVA XARXA ESTÀ CONSTRUÏDA</h3>
-          <button class="btn btn-secondary" onclick="app.toggleNeuralPanel()" style="font-size: 0.85rem; padding: 0.4rem 1rem;">
-            🔍 Veure xarxa completa
+          <button class="btn btn-secondary" onclick="app.scrollToNeuron()" style="font-size: 0.85rem; padding: 0.4rem 1rem;">
+            🔍 Veure neurona sencera
           </button>
         </div>
         <p style="color: #475569; font-size: 0.95rem; margin-bottom: 1.25rem;">
@@ -957,6 +957,56 @@
       </div>
     </section>
 
+    <!-- ============================================================
+         SECCIÓ FIXA: LA TEVA NEURONA DEL CONEIXEMENT (Sempre visible al final)
+         ============================================================ -->
+    <section class="neural-board-card" id="persistent-neural-board">
+      <div class="neural-board-header">
+        <div class="neural-title-wrap">
+          <div class="neural-badge-icon">⚡🧠</div>
+          <div>
+            <h3 class="neural-main-title">LA TEVA NEURONA DEL CONEIXEMENT</h3>
+            <p class="neural-subtitle">Estructura sinàptica en viu: les dendrites capten, el nucli processa i l'axó consolida</p>
+          </div>
+        </div>
+        <div class="neural-stats-pillbar">
+          <div class="nstat-mini">
+            <span class="nstat-num" id="nn-nodes-count">0</span>
+            <span class="nstat-label">/14 conceptes</span>
+          </div>
+          <div class="nstat-mini">
+            <span class="nstat-num" id="nn-conn-count">0</span>
+            <span class="nstat-label">/15 sinapsis</span>
+          </div>
+          <div class="nstat-mini">
+            <span class="nstat-num" id="nn-rigor-pct">—</span>
+            <span class="nstat-label">rigor (1r intent)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anatomical & Stylized Interactive Neuron SVG -->
+      <div class="neuron-svg-container">
+        <svg id="neural-net-svg" viewBox="0 0 960 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+
+      <!-- Legend & Anatomy Guide -->
+      <div class="neuron-footer-legend">
+        <div class="neuron-legend-item">
+          <span class="legend-dot active-first"></span> <strong>Consolidat al 1r intent (Rigor)</strong>
+        </div>
+        <div class="neuron-legend-item">
+          <span class="legend-dot active-later"></span> <strong>Consolidat per revisió</strong>
+        </div>
+        <div class="neuron-legend-item">
+          <span class="legend-dot pending"></span> <strong>Sinapsi pendent d'activar</strong>
+        </div>
+        <div class="neuron-legend-hint">
+          🔬 <strong>Anatomia de la neurona:</strong> 🌿 <em>Dendrites (esquerra)</em> reben estímuls de la memòria de treball · 🧬 <em>Soma i Nucli (centre)</em> processen la càrrega cognitiva · ⚡ <em>Axó i botons terminals (dreta)</em> consoliden les estratègies a la memòria a llarg termini.
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Distraction Alert Overlay (Triggered on tab switch / window minimize) -->
@@ -997,59 +1047,6 @@
   <div class="toast-msg" id="app-toast">
     <span>✅</span> <span id="toast-text">Missatge de confirmació</span>
   </div>
-
-  <!-- ============================================================
-       NEURAL NETWORK PANEL MODAL
-       ============================================================ -->
-  <div class="neural-panel-modal" id="neural-panel">
-    <div class="neural-panel-inner">
-      <!-- Header -->
-      <div class="neural-panel-header">
-        <h2>🧠 La teva Xarxa de Coneixement</h2>
-        <button class="neural-panel-close" onclick="app.toggleNeuralPanel()">✕</button>
-      </div>
-
-      <!-- Stats -->
-      <div class="neural-stats-row">
-        <div class="nstat">
-          <span class="nstat-val" id="nn-nodes-count">0</span>
-          <span class="nstat-lbl">/ 14 conceptes</span>
-        </div>
-        <div class="nstat">
-          <span class="nstat-val" id="nn-conn-count">0</span>
-          <span class="nstat-lbl">/ 13 connexions</span>
-        </div>
-        <div class="nstat">
-          <span class="nstat-val" id="nn-rigor-pct">—</span>
-          <span class="nstat-lbl">rigor (1r intent)</span>
-        </div>
-      </div>
-
-      <!-- SVG Network -->
-      <div class="neural-svg-wrap">
-        <svg id="neural-net-svg" viewBox="0 0 400 640" xmlns="http://www.w3.org/2000/svg"></svg>
-      </div>
-
-      <!-- Legend -->
-      <div class="neural-legend">
-        <div class="nn-legend-item">
-          <div class="nn-legend-dot" style="background:#0284c7;"></div>
-          Consolidat
-        </div>
-        <div class="nn-legend-item">
-          <div class="nn-legend-dot" style="background:#f59e0b;"></div>
-          Primer intent
-        </div>
-        <div class="nn-legend-item">
-          <div class="nn-legend-dot" style="background:#e2e8f0;border:1px dashed #94a3b8;"></div>
-          Pendent
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Neural Panel Backdrop -->
-  <div class="neural-backdrop" id="neural-backdrop" onclick="app.toggleNeuralPanel()"></div>
 
   <!-- Node Toast: CONCEPTE CONSOLIDAT / NOVA CONNEXIÓ -->
   <div class="node-toast" id="node-toast">
