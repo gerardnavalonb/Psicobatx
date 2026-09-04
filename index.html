@@ -958,51 +958,81 @@
     </section>
 
     <!-- ============================================================
-         SECCIÓ FIXA: LA TEVA NEURONA DEL CONEIXEMENT (Sempre visible al final)
+         SECCIÓ FIXA: MAPA NEURAL CEREBRAL (SKILL TREE VIDEOJOC)
          ============================================================ -->
-    <section class="neural-board-card" id="persistent-neural-board">
-      <div class="neural-board-header">
-        <div class="neural-title-wrap">
-          <div class="neural-badge-icon">⚡🧠</div>
+    <section class="cyber-brain-card" id="persistent-neural-board">
+      <!-- HUD Hologram Corner Accents -->
+      <div class="hud-corner top-left"></div>
+      <div class="hud-corner top-right"></div>
+      <div class="hud-corner bottom-left"></div>
+      <div class="hud-corner bottom-right"></div>
+
+      <div class="cyber-board-header">
+        <div class="cyber-title-wrap">
+          <div class="cyber-badge-icon">
+            <span class="cyber-pulse-dot"></span>
+            🧠🎮
+          </div>
           <div>
-            <h3 class="neural-main-title">LA TEVA NEURONA DEL CONEIXEMENT</h3>
-            <p class="neural-subtitle">Estructura sinàptica en viu: les dendrites capten, el nucli processa i l'axó consolida</p>
+            <div class="cyber-tagline">// TELEMETRIA COGNITIVA · BATXILLERAT //</div>
+            <h3 class="cyber-main-title">MAPA NEURAL CEREBRAL <span class="cyber-sub-badge">SKILL TREE</span></h3>
+            <p class="cyber-subtitle">Sincronitza els 14 nuclis cerebrals per encendre els circuits de la memòria i optimitzar el teu aprenentatge</p>
           </div>
         </div>
-        <div class="neural-stats-pillbar">
-          <div class="nstat-mini">
-            <span class="nstat-num" id="nn-nodes-count">0</span>
-            <span class="nstat-label">/14 conceptes</span>
+        <div class="cyber-stats-pillbar">
+          <div class="cyber-stat-pill">
+            <span class="cyber-stat-icon">🧬</span>
+            <div class="cyber-stat-text">
+              <span class="cyber-stat-val" id="nn-nodes-count">0</span><span class="cyber-stat-max">/14</span>
+              <span class="cyber-stat-label">NUCLIS</span>
+            </div>
           </div>
-          <div class="nstat-mini">
-            <span class="nstat-num" id="nn-conn-count">0</span>
-            <span class="nstat-label">/15 sinapsis</span>
+          <div class="cyber-stat-pill">
+            <span class="cyber-stat-icon">⚡</span>
+            <div class="cyber-stat-text">
+              <span class="cyber-stat-val" id="nn-conn-count">0</span><span class="cyber-stat-max">/17</span>
+              <span class="cyber-stat-label">SINAPSIS</span>
+            </div>
           </div>
-          <div class="nstat-mini">
-            <span class="nstat-num" id="nn-rigor-pct">—</span>
-            <span class="nstat-label">rigor (1r intent)</span>
+          <div class="cyber-stat-pill gold-glow">
+            <span class="cyber-stat-icon">🎯</span>
+            <div class="cyber-stat-text">
+              <span class="cyber-stat-val" id="nn-rigor-pct">—</span>
+              <span class="cyber-stat-label">SYNC RIGOR</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Anatomical & Stylized Interactive Neuron SVG -->
-      <div class="neuron-svg-container">
-        <svg id="neural-net-svg" viewBox="0 0 960 420" preserveAspectRatio="xMidYMid meet"></svg>
+      <!-- Holographic Interactive Brain Silhouette & Skill-Tree SVG -->
+      <div class="cyber-brain-viewport">
+        <div class="cyber-grid-overlay"></div>
+        <svg id="neural-net-svg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
 
-      <!-- Legend & Anatomy Guide -->
-      <div class="neuron-footer-legend">
-        <div class="neuron-legend-item">
-          <span class="legend-dot active-first"></span> <strong>Consolidat al 1r intent (Rigor)</strong>
+      <!-- Cyber Legend & Anatomy Lobe Guide -->
+      <div class="cyber-footer-hud">
+        <div class="cyber-legend-items">
+          <div class="cyber-leg-item">
+            <span class="cyber-dot gold"></span> <strong>Tier Llegenda (1r intent · Rigor)</strong>
+          </div>
+          <div class="cyber-leg-item">
+            <span class="cyber-dot cyan"></span> <strong>Nucli Actiu (Consolidat)</strong>
+          </div>
+          <div class="cyber-leg-item">
+            <span class="cyber-dot offline"></span> <strong>Circuit Offline (Bloquejat)</strong>
+          </div>
         </div>
-        <div class="neuron-legend-item">
-          <span class="legend-dot active-later"></span> <strong>Consolidat per revisió</strong>
-        </div>
-        <div class="neuron-legend-item">
-          <span class="legend-dot pending"></span> <strong>Sinapsi pendent d'activar</strong>
-        </div>
-        <div class="neuron-legend-hint">
-          🔬 <strong>Anatomia de la neurona:</strong> 🌿 <em>Dendrites (esquerra)</em> reben estímuls de la memòria de treball · 🧬 <em>Soma i Nucli (centre)</em> processen la càrrega cognitiva · ⚡ <em>Axó i botons terminals (dreta)</em> consoliden les estratègies a la memòria a llarg termini.
+        <div class="cyber-anatomy-bar">
+          <span class="lobe-tag prefrontal">🧠 CÒRTEX PREFRONTAL</span>
+          <span class="lobe-arrow">➔</span>
+          <span class="lobe-tag parietal">🧩 LÒBUL PARIETAL</span>
+          <span class="lobe-arrow">➔</span>
+          <span class="lobe-tag core">⚖️ CORE COGNITIU</span>
+          <span class="lobe-arrow">➔</span>
+          <span class="lobe-tag temporal">📚 HIPOCAMP TEMPORAL</span>
+          <span class="lobe-arrow">➔</span>
+          <span class="lobe-tag occipital">🎯 CÒRTEX EXECUTIU FINAL</span>
         </div>
       </div>
     </section>

@@ -226,49 +226,54 @@ class MemoryHackApp {
 
     // ============================================================
     // NEURAL NETWORK: Node & Connection Definitions
-    // Biological Neuron Topology (Dendrites -> Soma -> Axon -> Synapses)
-    // ViewBox: 0 0 960 420
+    // Lateral Brain Hologram Topology (Cyberpunk Skill-Tree HUD)
+    // ViewBox: 0 0 1000 520
     // ============================================================
     this.nodeDefinitions = [
-      // DENDRITES (Input & Working Memory)
-      { id: 1,  emoji: "🧠", label: "Memòria de treball",      short: ["Memòria de", "treball"],       x: 65,  y: 205, zone: "dendrite" },
-      { id: 2,  emoji: "🛑", label: "Capacitat limitada",       short: ["Capacitat", "limitada"],       x: 185, y: 205, zone: "dendrite" },
-      { id: 3,  emoji: "🔢", label: "Llei de Miller (7±2)",     short: ["Miller", "(7±2)"],             x: 295, y: 155, zone: "dendrite" },
-      { id: 4,  emoji: "🧩", label: "Chunking (Agrupació)",     short: ["Chunking", "(Agrupació)"],     x: 145, y: 325, zone: "dendrite" },
-      { id: 6,  emoji: "🧱", label: "Càrrega intrínseca",       short: ["Càrrega", "intrínseca"],       x: 280, y: 325, zone: "dendrite" },
-      { id: 7,  emoji: "🚨", label: "Càrrega extrínseca",       short: ["Càrrega", "extrínseca"],       x: 145, y: 85,  zone: "dendrite" },
-      { id: 9,  emoji: "🔕", label: "Atenció & Distraccions",   short: ["Atenció &", "Distraccions"],   x: 280, y: 80,  zone: "dendrite" },
+      // PREFRONTAL LOBE (Front/Left) - Working Memory & Inhibition
+      { id: 1,  emoji: "🧠", label: "Memòria de treball",      short: ["Memòria de", "treball"],       x: 200, y: 245, lobe: "prefrontal" },
+      { id: 2,  emoji: "🛑", label: "Capacitat limitada",       short: ["Capacitat", "limitada"],       x: 160, y: 340, lobe: "prefrontal" },
+      { id: 7,  emoji: "🚨", label: "Càrrega extrínseca",       short: ["Càrrega", "extrínseca"],       x: 140, y: 170, lobe: "prefrontal" },
+      { id: 9,  emoji: "🔕", label: "Atenció & Inhibició",     short: ["Atenció &", "Inhibició"],      x: 265, y: 155, lobe: "prefrontal" },
 
-      // SOMA & NUCLI (Central Processing)
-      { id: 5,  emoji: "⚖️", label: "Càrrega cognitiva",        short: ["Càrrega", "cognitiva"],        x: 405, y: 215, zone: "soma" },
-      { id: 8,  emoji: "🚀", label: "Càrrega rellevant",        short: ["Càrrega", "rellevant"],        x: 505, y: 215, zone: "soma" },
+      // PARIETAL LOBE (Top/Center) - Numerical & Chunking
+      { id: 3,  emoji: "🔢", label: "Llei de Miller (7±2)",     short: ["Miller", "(7±2)"],             x: 375, y: 120, lobe: "parietal" },
+      { id: 4,  emoji: "🧩", label: "Chunking (Agrupació)",     short: ["Chunking", "(Agrupació)"],     x: 505, y: 100, lobe: "parietal" },
+      { id: 6,  emoji: "🧱", label: "Càrrega intrínseca",       short: ["Càrrega", "intrínseca"],       x: 630, y: 110, lobe: "parietal" },
 
-      // AXON & MYELIN (Strategies & Active Learning)
-      { id: 10, emoji: "📈", label: "Exemples resolts",         short: ["Exemples", "resolts"],         x: 625, y: 140, zone: "axon" },
-      { id: 11, emoji: "👥", label: "Col·laboració",            short: ["Aprendre en", "parella"],      x: 750, y: 140, zone: "axon" },
-      { id: 12, emoji: "✍️", label: "Generació activa",         short: ["Autoexplicar", "i escriure"],  x: 625, y: 290, zone: "axon" },
-      { id: 13, emoji: "😌", label: "Gestió de l'estrès",       short: ["Control", "de l'estrès"],      x: 750, y: 290, zone: "axon" },
+      // CORE COGNITIU (Deep Central / Cingulate) - Synthesis & Load
+      { id: 5,  emoji: "⚖️", label: "Càrrega cognitiva",        short: ["Càrrega", "cognitiva"],        x: 385, y: 240, lobe: "core" },
+      { id: 8,  emoji: "🚀", label: "Càrrega rellevant",        short: ["Càrrega", "rellevant"],        x: 515, y: 225, lobe: "core" },
 
-      // TERMINAL BOUTON (Long-term Storage Application)
-      { id: 14, emoji: "🎯", label: "Aplicació real",           short: ["Pla d'estudi", "personal"],    x: 880, y: 215, zone: "terminal" },
+      // TEMPORAL LOBE & HIPPOCAMPUS (Bottom/Center) - Semantic & Long-Term
+      { id: 12, emoji: "✍️", label: "Generació activa",         short: ["Autoexplicar", "i escriure"],  x: 430, y: 365, lobe: "temporal" },
+      { id: 13, emoji: "😌", label: "Gestió de l'estrès",       short: ["Control", "de l'estrès"],      x: 575, y: 345, lobe: "temporal" },
+
+      // OCCIPITAL & INTEGRATION / EXECUTIVE OUTPUT (Right)
+      { id: 10, emoji: "📈", label: "Exemples resolts",         short: ["Exemples", "resolts"],         x: 690, y: 180, lobe: "occipital" },
+      { id: 11, emoji: "👥", label: "Col·laboració",            short: ["Aprendre en", "parella"],      x: 815, y: 170, lobe: "occipital" },
+      { id: 14, emoji: "🎯", label: "Aplicació real",           short: ["Pla d'estudi", "personal"],    x: 865, y: 290, lobe: "executive" },
     ];
 
-    // Connection pairs [a, b]
+    // Connection conduits [a, b]
     this.connectionDefinitions = [
       [1, 2],   // Memòria ↔ Capacitat limitada
+      [1, 7],   // Memòria ↔ Càrrega extrínseca
+      [7, 9],   // Extrínseca ↔ Atenció & Inhibició
+      [9, 1],   // Atenció ↔ Memòria de treball
       [1, 3],   // Memòria ↔ Miller
-      [2, 4],   // Capacitat ↔ Chunking
-      [2, 5],   // Capacitat ↔ Càrrega cognitiva (soma)
+      [3, 4],   // Miller ↔ Chunking
+      [2, 5],   // Capacitat ↔ Càrrega cognitiva
       [3, 5],   // Miller ↔ Càrrega cognitiva
       [5, 6],   // Càrrega ↔ Intrínseca
-      [5, 7],   // Càrrega ↔ Extrínseca
-      [7, 9],   // Extrínseca ↔ Atenció & Distraccions
-      [5, 8],   // Càrrega ↔ Rellevant (nucli actiu)
+      [4, 6],   // Chunking ↔ Intrínseca
+      [5, 8],   // Càrrega ↔ Rellevant (Core)
+      [8, 12],  // Rellevant ↔ Generació activa (Hipocamp)
+      [12, 13], // Generació ↔ Gestió estrès
       [8, 10],  // Rellevant ↔ Exemples resolts
-      [8, 12],  // Rellevant ↔ Generació activa
       [10, 11], // Exemples resolts ↔ Col·laboració
-      [11, 12], // Col·laboració ↔ Generació activa
-      [9, 13],  // Atenció ↔ Gestió Estrès
+      [10, 14], // Exemples resolts ↔ Aplicació real
+      [11, 14], // Col·laboració ↔ Aplicació real
       [12, 14], // Generació activa ↔ Aplicació real
     ];
 
@@ -376,6 +381,10 @@ class MemoryHackApp {
         createNote(261.63, now + 0.1, 0.18, 'sawtooth');
       } else if (type === 'click') {
         createNote(800, now, 0.04);
+      } else if (type === 'cyber-unlock') {
+        createNote(587.33, now, 0.07, 'triangle'); // D5
+        createNote(880, now + 0.06, 0.08, 'sine'); // A5
+        createNote(1174.66, now + 0.12, 0.18, 'sine'); // D6
       }
     } catch (e) {
       // Audio context might be restricted before user gesture
@@ -1361,7 +1370,7 @@ ${d.concept}
 
     // Completion screen stats
     setEl('nn-final-nodes', `${nodesUnlocked}/14`);
-    setEl('nn-final-conns', `${connCount}/15`);
+    setEl('nn-final-conns', `${connCount}/18`);
     setEl('nn-final-rigor', rigor !== null ? `${rigor}%` : '—');
   }
 
@@ -1377,126 +1386,134 @@ ${d.concept}
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const mk = (tag) => document.createElementNS(SVG_NS, tag);
 
-    // ── 1. DEFS & FILTERS ──────────────────────────────────────────
+    // ── 1. DEFS, GLOW FILTERS & CYBER GRADIENTS ─────────────────────
     const defs = mk('defs');
     defs.innerHTML = `
-      <filter id="glow-blue" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <filter id="cyber-glow-cyan" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blur"/>
+        <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0   0 1 0 0 0.9   1 1 1 0 1   0 0 0 0.9 0" result="cyanGlow"/>
+        <feMerge><feMergeNode in="cyanGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
-      <filter id="glow-gold" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <filter id="cyber-glow-gold" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5.5" result="blur"/>
+        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0.9   0.7 0 0 0 0.6   0 0 0 0 0   0 0 0 1 0" result="goldGlow"/>
+        <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
-      <filter id="glow-soma" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <filter id="cyber-brain-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
 
-      <linearGradient id="grad-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#fbbf24"/>
-        <stop offset="100%" stop-color="#d97706"/>
+      <!-- Holographic brain fill gradient -->
+      <linearGradient id="grad-brain-holo" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0284c7" stop-opacity="0.16"/>
+        <stop offset="45%" stop-color="#38bdf8" stop-opacity="0.08"/>
+        <stop offset="85%" stop-color="#6366f1" stop-opacity="0.14"/>
+        <stop offset="100%" stop-color="#a855f7" stop-opacity="0.08"/>
       </linearGradient>
 
-      <linearGradient id="grad-blue" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#38bdf8"/>
+      <!-- Active Node Gradients -->
+      <radialGradient id="grad-core-cyan" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#e0f2fe"/>
+        <stop offset="35%" stop-color="#38bdf8"/>
         <stop offset="100%" stop-color="#0284c7"/>
-      </linearGradient>
+      </radialGradient>
 
-      <radialGradient id="grad-soma" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.6"/>
-        <stop offset="60%" stop-color="#e0f2fe" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0"/>
+      <radialGradient id="grad-core-gold" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fffbeb"/>
+        <stop offset="35%" stop-color="#f59e0b"/>
+        <stop offset="100%" stop-color="#b45309"/>
       </radialGradient>
     `;
     svg.appendChild(defs);
 
-    // ── 2. ANATOMICAL NEURON BACKGROUND (BIOLOGICAL SILHOUETTE) ────
-    const bgGroup = mk('g');
-    bgGroup.setAttribute('class', 'neuron-anatomy-bg');
+    // ── 2. CYBER BRAIN SILHOUETTE & ANATOMICAL CIRCUIT TRACKS ───────
+    const brainBgGroup = mk('g');
+    brainBgGroup.setAttribute('class', 'cyber-brain-anatomy');
 
-    // Section header labels in SVG
-    const headers = [
-      { text: "🌿 DENDRITES (Recepció d'estímuls)", x: 190, y: 28 },
-      { text: "🧬 SOMA I NUCLI (Processament)", x: 450, y: 28 },
-      { text: "⚡ AXÓ I SINAPSIS (Consolidació a llarg termini)", x: 740, y: 28 }
+    // Brain lateral profile silhouette path (ViewBox: 0 0 1000 520)
+    const brainContour = mk('path');
+    brainContour.setAttribute('d', `
+      M 90 260
+      C 80 170, 150 85, 290 60
+      C 400 40, 580 40, 720 70
+      C 830 95, 930 160, 930 250
+      C 930 320, 890 380, 830 395
+      C 770 435, 690 430, 640 395
+      C 610 380, 580 420, 550 465
+      L 510 465
+      C 490 410, 460 385, 390 395
+      C 320 410, 240 400, 190 350
+      C 170 320, 140 330, 110 305
+      C 95 285, 90 275, 90 260 Z
+    `);
+    brainContour.setAttribute('fill', 'url(#grad-brain-holo)');
+    brainContour.setAttribute('stroke', '#38bdf8');
+    brainContour.setAttribute('stroke-width', '2.5');
+    brainContour.setAttribute('class', 'brain-contour-glow');
+    brainBgGroup.appendChild(brainContour);
+
+    // Cerebellar folds & Brainstem accent
+    const brainstem = mk('path');
+    brainstem.setAttribute('d', `
+      M 530 465 L 530 495
+      M 550 465 L 550 495
+      M 640 395 C 690 435, 770 435, 830 395
+      M 670 410 C 720 440, 780 430, 820 400
+    `);
+    brainstem.setAttribute('stroke', 'rgba(56, 189, 248, 0.28)');
+    brainstem.setAttribute('stroke-width', '2');
+    brainstem.setAttribute('fill', 'none');
+    brainBgGroup.appendChild(brainstem);
+
+    // Cerebral Gyri & Sulci (Folds) represented as cyber holographic circuit traces
+    const gyriCircuits = mk('path');
+    gyriCircuits.setAttribute('d', `
+      M 200 100 C 230 180, 190 210, 280 220
+      M 280 90  C 310 160, 310 210, 360 210
+      M 380 60  C 390 140, 360 180, 430 190
+      M 480 60  C 480 130, 460 170, 540 180
+      M 580 60  C 590 140, 560 190, 650 200
+      M 690 85  C 710 150, 700 210, 780 220
+      M 800 120 C 820 180, 790 250, 880 250
+      M 230 330 C 290 320, 320 280, 360 300
+      M 350 350 C 420 340, 460 290, 520 310
+      M 530 370 C 580 340, 640 320, 700 310
+      M 190 350 C 240 380, 310 370, 380 360
+    `);
+    gyriCircuits.setAttribute('class', 'brain-gyri-circuit');
+    brainBgGroup.appendChild(gyriCircuits);
+
+    // Lobe Telemetry HUD Banners / Badges
+    const lobeLabels = [
+      { text: "[ CÒRTEX PREFRONTAL · ATENCIÓ & MEMÒRIA ]", x: 200, y: 38 },
+      { text: "[ LÒBUL PARIETAL · CHUNKING & DÍGITS ]", x: 505, y: 32 },
+      { text: "[ CORE COGNITIU · CÀRREGA CENTRAL ]", x: 450, y: 205 },
+      { text: "[ HIPOCAMP TEMPORAL · AUTOEXPLICACIÓ ]", x: 500, y: 440 },
+      { text: "[ CÒRTEX D'INTEGRACIÓ · EXECUTIU ]", x: 820, y: 55 }
     ];
-    headers.forEach(h => {
+    lobeLabels.forEach(l => {
+      const g = mk('g');
       const t = mk('text');
-      t.setAttribute('x', h.x);
-      t.setAttribute('y', h.y);
+      t.setAttribute('x', l.x);
+      t.setAttribute('y', l.y);
       t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-size', '10.5');
+      t.setAttribute('font-family', 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace');
+      t.setAttribute('font-size', '8.5');
       t.setAttribute('font-weight', '800');
-      t.setAttribute('letter-spacing', '0.04em');
-      t.setAttribute('fill', '#94a3b8');
-      t.textContent = h.text;
-      bgGroup.appendChild(t);
+      t.setAttribute('letter-spacing', '0.08em');
+      t.setAttribute('fill', '#38bdf8');
+      t.setAttribute('opacity', '0.85');
+      t.textContent = l.text;
+      g.appendChild(t);
+      brainBgGroup.appendChild(g);
     });
 
-    // Dendrite background branches
-    const dendritesBg = mk('path');
-    dendritesBg.setAttribute('d', `
-      M 400 215 C 320 200, 240 100, 145 85
-      M 400 215 C 290 205, 185 205, 65 205
-      M 400 215 C 320 230, 240 310, 145 325
-      M 280 80  C 200 80,  150 140, 65 205
-      M 280 325 C 200 325, 150 260, 65 205
-    `);
-    dendritesBg.setAttribute('stroke', '#e0f2fe');
-    dendritesBg.setAttribute('stroke-width', '10');
-    dendritesBg.setAttribute('stroke-linecap', 'round');
-    dendritesBg.setAttribute('fill', 'none');
-    bgGroup.appendChild(dendritesBg);
+    svg.appendChild(brainBgGroup);
 
-    // Central Soma / Cell Body organic shape
-    const somaBg = mk('ellipse');
-    somaBg.setAttribute('cx', '455');
-    somaBg.setAttribute('cy', '215');
-    somaBg.setAttribute('rx', '95');
-    somaBg.setAttribute('ry', '75');
-    somaBg.setAttribute('fill', 'url(#grad-soma)');
-    somaBg.setAttribute('filter', 'url(#glow-soma)');
-    bgGroup.appendChild(somaBg);
-
-    // Axon Main Cable (running from soma to terminal)
-    const axonCable = mk('path');
-    axonCable.setAttribute('d', 'M 520 215 C 640 215, 740 215, 870 215');
-    axonCable.setAttribute('class', 'neuron-axon-cable');
-    bgGroup.appendChild(axonCable);
-
-    // Myelin Sheaths (translucent rounded rectangles protecting axon)
-    const myelinPositions = [570, 680, 790];
-    myelinPositions.forEach(mx => {
-      const rect = mk('rect');
-      rect.setAttribute('x', mx);
-      rect.setAttribute('y', '204');
-      rect.setAttribute('width', '80');
-      rect.setAttribute('height', '22');
-      rect.setAttribute('rx', '11');
-      rect.setAttribute('fill', '#e0f2fe');
-      rect.setAttribute('stroke', '#bae6fd');
-      rect.setAttribute('stroke-width', '1.5');
-      rect.setAttribute('opacity', '0.75');
-      bgGroup.appendChild(rect);
-    });
-
-    // Terminal Synaptic Arborization (Branches leading to Node 14)
-    const terminalBranches = mk('path');
-    terminalBranches.setAttribute('d', `
-      M 750 140 C 820 160, 840 200, 880 215
-      M 750 290 C 820 270, 840 230, 880 215
-    `);
-    terminalBranches.setAttribute('stroke', '#e0f2fe');
-    terminalBranches.setAttribute('stroke-width', '8');
-    terminalBranches.setAttribute('stroke-linecap', 'round');
-    terminalBranches.setAttribute('fill', 'none');
-    bgGroup.appendChild(terminalBranches);
-
-    svg.appendChild(bgGroup);
-
-    // ── 3. SYNAPTIC CONNECTIONS (ORGANIC CURVED BÉZIERS) ───────────
+    // ── 3. SYNAPSE LASER CONDUITS (CONNECTIONS LAYER) ──────────────
     const connsGroup = mk('g');
-    connsGroup.setAttribute('class', 'neuron-connections-layer');
+    connsGroup.setAttribute('class', 'cyber-connections-layer');
 
     this.connectionDefinitions.forEach(([a, b]) => {
       const nA = this.nodeDefinitions.find(n => n.id === a);
@@ -1507,9 +1524,9 @@ ${d.concept}
       const isActive = nn.connections.has(key);
       const nodeAFirst = nn.nodes[a]?.firstTry;
       const nodeBFirst = nn.nodes[b]?.firstTry;
-      const isGoldSynapse = isActive && nodeAFirst && nodeBFirst;
+      const isGold = isActive && nodeAFirst && nodeBFirst;
 
-      // Smooth Organic Cubic Bézier Path
+      // Cubic Bézier for organic, sleek technological curve
       const dx = nB.x - nA.x;
       const cx1 = nA.x + dx * 0.45;
       const cy1 = nA.y;
@@ -1518,86 +1535,81 @@ ${d.concept}
 
       const path = mk('path');
       path.setAttribute('d', `M ${nA.x} ${nA.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${nB.x} ${nB.y}`);
-      path.setAttribute('class', isActive ? 'neuron-conn-curved neuron-conn-active' : 'neuron-conn-curved neuron-conn-inactive');
-
-      if (isActive) {
-        path.setAttribute('stroke', isGoldSynapse ? '#f59e0b' : '#0284c7');
-        path.setAttribute('stroke-width', isGoldSynapse ? '3.2' : '2.6');
-        if (isGoldSynapse) {
-          path.setAttribute('filter', 'url(#glow-gold)');
-        }
-      }
+      path.setAttribute('class', isActive 
+        ? (isGold ? 'cyber-synapse-beam cyber-beam-gold' : 'cyber-synapse-beam cyber-beam-active')
+        : 'cyber-synapse-beam cyber-beam-inactive');
 
       connsGroup.appendChild(path);
     });
     svg.appendChild(connsGroup);
 
-    // ── 4. CONCEPT NODES (SYNAPSE HUBS) ────────────────────────────
+    // ── 4. CYBER SKILL-TREE NODES (SKILL HUBS) ──────────────────────
     const nodesGroup = mk('g');
-    nodesGroup.setAttribute('class', 'neuron-nodes-layer');
+    nodesGroup.setAttribute('class', 'cyber-nodes-layer');
 
     this.nodeDefinitions.forEach(nodeDef => {
       const nodeState = nn.nodes[nodeDef.id];
       const isUnlocked = nodeState?.unlocked;
       const isFirstTry = nodeState?.firstTry;
-      const isSoma = nodeDef.zone === 'soma';
-      const radius = isSoma ? 21 : 18;
+      const isBossNode = nodeDef.id === 14;
+      const radius = isBossNode ? 24 : (nodeDef.lobe === 'core' ? 22 : 19);
 
       const g = mk('g');
-      g.setAttribute('class', 'neuron-node-group');
-      g.setAttribute('title', `${nodeDef.label} (${isUnlocked ? 'Consolidat' : 'Pendent'})`);
+      g.setAttribute('class', 'cyber-node-group');
       g.onclick = () => {
-        const statusText = isUnlocked 
-          ? (isFirstTry ? 'Consolidat al 1r intent (Rigor excel·lent)' : 'Consolidat després de revisió')
-          : 'Pendent de consolidar: supera el repte corresponent per activar aquesta sinapsi!';
-        this.showToast(`🧠 ${nodeDef.label}: ${statusText}`);
+        const tier = isFirstTry ? 'TIER LLEGENDA (1r intent · Màxim rigor)' : (isUnlocked ? 'TIER COMPLETAT (Sincronitzat)' : 'CIRCUIT BLOQUEJAT');
+        this.showToast(`🎮 [${tier}] ${nodeDef.label}`);
+        this.playSynthSound(isUnlocked ? 'cyber-unlock' : 'click');
       };
 
-      // Pulsing outer halo when unlocked
+      // Outer sci-fi targeting halo when unlocked
       if (isUnlocked) {
         const ring = mk('circle');
         ring.setAttribute('cx', nodeDef.x);
         ring.setAttribute('cy', nodeDef.y);
         ring.setAttribute('r', radius + 11);
-        ring.setAttribute('fill', isFirstTry ? 'rgba(245, 158, 11, 0.22)' : 'rgba(2, 132, 199, 0.2)');
-        ring.setAttribute('class', 'neuron-glow-ring');
+        ring.setAttribute('fill', isFirstTry ? 'rgba(245, 158, 11, 0.22)' : 'rgba(0, 240, 255, 0.18)');
+        ring.setAttribute('stroke', isFirstTry ? 'rgba(245, 158, 11, 0.6)' : 'rgba(0, 240, 255, 0.5)');
+        ring.setAttribute('stroke-width', '1.5');
+        ring.setAttribute('stroke-dasharray', '5, 3');
+        ring.setAttribute('class', 'cyber-halo-pulse');
         g.appendChild(ring);
       }
 
-      // Main Node Circle
-      const circle = mk('circle');
-      circle.setAttribute('cx', nodeDef.x);
-      circle.setAttribute('cy', nodeDef.y);
-      circle.setAttribute('r', radius);
-      circle.setAttribute('class', isUnlocked ? 'neuron-node-circle active' : 'neuron-node-circle inactive');
+      // Sci-fi Node Core
+      const core = mk('circle');
+      core.setAttribute('cx', nodeDef.x);
+      core.setAttribute('cy', nodeDef.y);
+      core.setAttribute('r', radius);
+      core.setAttribute('class', isUnlocked ? 'cyber-node-core active' : 'cyber-node-core offline');
 
       if (isUnlocked) {
-        circle.setAttribute('fill', isFirstTry ? 'url(#grad-gold)' : 'url(#grad-blue)');
-        circle.setAttribute('stroke', isFirstTry ? '#b45309' : '#0369a1');
-        circle.setAttribute('stroke-width', '2.2');
-        circle.setAttribute('filter', isFirstTry ? 'url(#glow-gold)' : 'url(#glow-blue)');
+        core.setAttribute('fill', isFirstTry ? 'url(#grad-core-gold)' : 'url(#grad-core-cyan)');
+        core.setAttribute('stroke', isFirstTry ? '#fbbf24' : '#00f0ff');
+        core.setAttribute('stroke-width', '2.5');
+        core.setAttribute('filter', isFirstTry ? 'url(#cyber-glow-gold)' : 'url(#cyber-glow-cyan)');
       } else {
-        circle.setAttribute('fill', '#ffffff');
-        circle.setAttribute('stroke', '#cbd5e1');
-        circle.setAttribute('stroke-width', '1.8');
-        circle.setAttribute('stroke-dasharray', '4,3');
+        core.setAttribute('fill', '#091124');
+        core.setAttribute('stroke', '#334155');
+        core.setAttribute('stroke-width', '1.8');
+        core.setAttribute('stroke-dasharray', '4, 3');
       }
-      g.appendChild(circle);
+      g.appendChild(core);
 
-      // Node Icon / Emoji inside
+      // Node Icon / Emoji or Node ID
       const iconTxt = mk('text');
       iconTxt.setAttribute('x', nodeDef.x);
       iconTxt.setAttribute('y', nodeDef.y + (isUnlocked ? 5 : 4));
       iconTxt.setAttribute('text-anchor', 'middle');
-      iconTxt.setAttribute('font-size', isUnlocked ? '13' : '10.5');
-      iconTxt.setAttribute('font-weight', '800');
-      iconTxt.setAttribute('font-family', 'system-ui, sans-serif');
-      iconTxt.setAttribute('fill', isUnlocked ? '#ffffff' : '#94a3b8');
-      iconTxt.textContent = isUnlocked ? nodeDef.emoji : nodeDef.id;
+      iconTxt.setAttribute('font-size', isUnlocked ? (isBossNode ? '16' : '13') : '10');
+      iconTxt.setAttribute('font-weight', '900');
+      iconTxt.setAttribute('font-family', 'ui-monospace, monospace');
+      iconTxt.setAttribute('fill', isUnlocked ? '#ffffff' : '#64748b');
+      iconTxt.textContent = isUnlocked ? nodeDef.emoji : `#${nodeDef.id}`;
       g.appendChild(iconTxt);
 
-      // Label Pill Background
-      const pillW = 86;
+      // Sci-fi Pill Badge Below
+      const pillW = 90;
       const pillH = 26;
       const pillX = nodeDef.x - (pillW / 2);
       const pillY = nodeDef.y + radius + 7;
@@ -1607,23 +1619,22 @@ ${d.concept}
       pillRect.setAttribute('y', pillY);
       pillRect.setAttribute('width', pillW);
       pillRect.setAttribute('height', pillH);
-      pillRect.setAttribute('rx', '6');
-      pillRect.setAttribute('fill', '#ffffff');
-      pillRect.setAttribute('stroke', isUnlocked ? (isFirstTry ? '#fde68a' : '#bae6fd') : '#e2e8f0');
-      pillRect.setAttribute('stroke-width', '1.2');
-      pillRect.setAttribute('box-shadow', '0 1px 3px rgba(0,0,0,0.05)');
+      pillRect.setAttribute('rx', '4');
+      pillRect.setAttribute('fill', '#070f24');
+      pillRect.setAttribute('stroke', isUnlocked ? (isFirstTry ? '#f59e0b' : '#38bdf8') : '#1e293b');
+      pillRect.setAttribute('stroke-width', '1.4');
       g.appendChild(pillRect);
 
-      // Label text (2 lines)
-      const labelColor = isUnlocked ? '#0f172a' : '#94a3b8';
+      // Concept Text lines
+      const labelColor = isUnlocked ? '#f8fafc' : '#64748b';
       nodeDef.short.forEach((line, i) => {
         const lbl = mk('text');
         lbl.setAttribute('x', nodeDef.x);
-        lbl.setAttribute('y', pillY + 11 + (i * 10));
+        lbl.setAttribute('y', pillY + 10 + (i * 10));
         lbl.setAttribute('text-anchor', 'middle');
         lbl.setAttribute('font-size', '8');
-        lbl.setAttribute('font-weight', isUnlocked ? '800' : '500');
-        lbl.setAttribute('font-family', 'system-ui, sans-serif');
+        lbl.setAttribute('font-weight', isUnlocked ? '800' : '600');
+        lbl.setAttribute('font-family', 'ui-monospace, SFMono-Regular, monospace');
         lbl.setAttribute('fill', labelColor);
         lbl.textContent = line;
         g.appendChild(lbl);
