@@ -56,6 +56,13 @@ class MemoryHackApp {
         subject: '',
         change: '',
         concept: ''
+      },
+
+      // Neural Network Progress System
+      neuralNet: {
+        nodes: {},           // nodeId -> { unlocked: bool, firstTry: bool }
+        connections: new Set(), // Set of 'a-b' strings (a < b)
+        wrongFirstNodes: new Set() // nodeIds where wrong answer came before unlock
       }
     };
 
@@ -217,6 +224,44 @@ class MemoryHackApp {
       }
     ];
 
+    // ============================================================
+    // NEURAL NETWORK: Node & Connection Definitions
+    // ============================================================
+    // Node positions for SVG viewBox 400 x 640
+    this.nodeDefinitions = [
+      { id: 1,  label: 'Memòria de treball',      short: ['Memòria de', 'treball'],      x: 200, y: 45  },
+      { id: 2,  label: 'Capacitat limitada',       short: ['Capacitat', 'limitada'],      x: 90,  y: 130 },
+      { id: 3,  label: 'Llei de Miller (7±2)',     short: ['Miller', '(7±2)'],            x: 310, y: 130 },
+      { id: 4,  label: 'Chunking',                 short: ['Chunking'],                   x: 85,  y: 220 },
+      { id: 5,  label: 'Càrrega cognitiva',        short: ['Càrrega', 'cognitiva'],       x: 270, y: 220 },
+      { id: 6,  label: 'Càrrega intrínseca',       short: ['Intrínseca'],                 x: 60,  y: 315 },
+      { id: 7,  label: 'Càrrega extrínseca',       short: ['Extrínseca'],                 x: 200, y: 315 },
+      { id: 8,  label: 'Càrrega rellevant',        short: ['Rellevant'],                  x: 340, y: 315 },
+      { id: 9,  label: 'Atenció i distraccions',   short: ['Atenció &', 'Distrac.'],      x: 130, y: 405 },
+      { id: 10, label: 'Exemples resolts',         short: ['Exemples', 'resolts'],        x: 315, y: 405 },
+      { id: 11, label: 'Col·laboració',            short: ['Col·lab.'],                   x: 70,  y: 495 },
+      { id: 12, label: 'Generació activa',         short: ['Generació', 'activa'],        x: 255, y: 495 },
+      { id: 13, label: "Gestió de l'estrès",       short: ["Estrès"],                     x: 100, y: 580 },
+      { id: 14, label: 'Aplicació real',           short: ['Aplicació', 'real'],          x: 265, y: 580 },
+    ];
+
+    // Connection pairs [a, b] – always stored as min-max key
+    this.connectionDefinitions = [
+      [1, 2],   // Memòria ↔ Capacitat limitada
+      [1, 3],   // Memòria ↔ Miller
+      [2, 4],   // Capacitat ↔ Chunking
+      [2, 5],   // Capacitat ↔ Càrrega cognitiva
+      [3, 5],   // Miller ↔ Càrrega cognitiva
+      [5, 6],   // Càrrega ↔ Intrínseca
+      [5, 7],   // Càrrega ↔ Extrínseca
+      [5, 8],   // Càrrega ↔ Rellevant
+      [7, 9],   // Extrínseca ↔ Atenció
+      [8, 12],  // Rellevant ↔ Generació activa
+      [10, 8],  // Exemples resolts ↔ Rellevant
+      [11, 12], // Col·laboració ↔ Generació activa
+      [13, 9],  // Estrès ↔ Atenció
+    ];
+
     this.init();
   }
 
@@ -225,6 +270,8 @@ class MemoryHackApp {
     this.renderWorkbenchAnimation();
     this.renderHacksCards();
     this.setupVisibilityListeners();
+    this.renderNeuralNet();
+    this.updateNeuralStats();
   }
 
   // --- DISTRACTION / TAB-SWITCH MONITORING ---
@@ -469,6 +516,7 @@ class MemoryHackApp {
     `;
     this.addXP(20, "Prova 1 completada");
     this.playSynthSound('correct');
+    this.unlockNode(1, true);
   }
 
   setupTrial2() {
@@ -517,6 +565,7 @@ class MemoryHackApp {
     `;
     this.addXP(25, "Prova 2 de sobrecàrrega completada");
     this.playSynthSound('correct');
+    this.unlockNode(2, true);
   }
 
   setupReflection1() {
@@ -540,6 +589,7 @@ class MemoryHackApp {
       `;
       this.addXP(30, "Comprensió dels límits cognitius");
       this.playSynthSound('success');
+      this.unlockNode(3);
     } else {
       btn.classList.add('incorrect');
       fb.className = 'feedback-box visible info';
@@ -550,6 +600,7 @@ class MemoryHackApp {
         </div>
       `;
       this.playSynthSound('wrong');
+      this.trackWrongAnswer(3);
     }
   }
 
@@ -585,6 +636,9 @@ class MemoryHackApp {
       fb.innerHTML = `<strong>Molt bé!</strong> Resposta correcta.`;
       this.playSynthSound('correct');
       this.addXP(20);
+      // Unlock corresponding concept node
+      if (qNum === 1) this.unlockNode(5); // Càrrega cognitiva
+      if (qNum === 2) this.unlockNode(4); // Chunking
     } else {
       btn.classList.add('incorrect');
       fb.className = 'feedback-box visible error';
@@ -592,6 +646,9 @@ class MemoryHackApp {
       if (qNum === 2) fb.innerHTML = `Chunking és agrupar informació solta en unitats amb significat.`;
       if (qNum === 3) fb.innerHTML = `Agrupar ajuda perquè redueix el nombre d'unitats independents a gestionar.`;
       this.playSynthSound('wrong');
+      // Track wrong first attempt for node unlock quality
+      if (qNum === 1) this.trackWrongAnswer(5);
+      if (qNum === 2) this.trackWrongAnswer(4);
     }
 
     // Check if all 3 answered
@@ -736,10 +793,18 @@ class MemoryHackApp {
       fb.innerHTML = `<strong>MOLT BÉ! 🎯</strong> ${sc.feedback}`;
       this.playSynthSound('correct');
       this.addXP(25);
+      // Unlock concept node for this load type (only first time)
+      if (sc.type === 'INTRÍNSECA') this.unlockNode(6);
+      if (sc.type === 'EXTRÍNSECA') this.unlockNode(7);
+      if (sc.type === 'RELLEVANT')  this.unlockNode(8);
     } else {
       fb.className = 'feedback-box visible error';
       fb.innerHTML = `<strong>No exactament.</strong> La resposta correcta és <strong>${sc.type}</strong>.<br>${sc.feedback}`;
       this.playSynthSound('wrong');
+      // Track wrong first attempt
+      if (sc.type === 'INTRÍNSECA') this.trackWrongAnswer(6);
+      if (sc.type === 'EXTRÍNSECA') this.trackWrongAnswer(7);
+      if (sc.type === 'RELLEVANT')  this.trackWrongAnswer(8);
     }
 
     document.getElementById('game-score-label').innerText = `Encerts: ${this.state.level3Score} / ${this.scenariosLevel3.length}`;
@@ -792,10 +857,12 @@ class MemoryHackApp {
         feedbackHtml = `<strong>Genial! 🔕</strong> Allunyar físicament el telèfon elimina la càrrega extrínseca de la distracció i l'esforç d'inhibir la temptació.`;
         this.addXP(25);
         this.playSynthSound('correct');
+        this.unlockNode(9); // Atenció i distraccions
       } else {
         btn.classList.add('incorrect');
         feedbackHtml = `<strong>Atenció:</strong> Encara que estigui en silenci a la taula, la simple presència visual del mòbil genera interferència atencional i augmenta la càrrega extrínseca.`;
         this.playSynthSound('wrong');
+        this.trackWrongAnswer(9);
       }
       this.updateCognitiveMeters();
       fb.className = 'feedback-box visible info';
@@ -845,10 +912,12 @@ class MemoryHackApp {
         feedbackHtml = `<strong>Brillant! 📈</strong> Aquest és l'<strong>Efecte dels Exemples Resolts</strong> (<em>worked examples</em>) i la <strong>retirada progressiva de la guia</strong>: per a principiants, veure un model estructurat redueix la frustració i guia la memòria de treball amb èxit!`;
         this.addXP(30);
         this.playSynthSound('success');
+        this.unlockNode(10); // Exemples resolts
       } else {
         btn.classList.add('incorrect');
         feedbackHtml = `Per a principiants, intentar resoldre a cegues sense model previ satura la memòria de treball amb cerques infructuoses. Els exemples resolts són molt més eficaços.`;
         this.playSynthSound('wrong');
+        this.trackWrongAnswer(10);
       }
       this.updateCognitiveMeters();
       fb.className = 'feedback-box visible success';
@@ -970,6 +1039,10 @@ class MemoryHackApp {
       this.renderHacksCards();
       this.addXP(30, `Hack ${hack.title} completat!`);
       this.playSynthSound('success');
+      // Unlock concept nodes for specific hacks
+      if (hack.id === 2) this.unlockNode(12); // Generació activa
+      if (hack.id === 4) this.unlockNode(11); // Col·laboració
+      if (hack.id === 7) this.unlockNode(13); // Gestió de l'estrès
     } else {
       btn.classList.add('incorrect');
       fb.className = 'feedback-box visible error';
@@ -1075,6 +1148,7 @@ class MemoryHackApp {
     document.getElementById('plan-output-container').scrollIntoView({ behavior: 'smooth' });
     this.addXP(60, "Pla d'estudi auditat amb èxit!");
     this.playSynthSound('success');
+    this.unlockNode(14, true); // Aplicació real - sempre primer intent (és disseny, no test)
   }
 
   proceedToReflection() {
@@ -1114,6 +1188,7 @@ class MemoryHackApp {
     `;
 
     this.addXP(100, "Reflexió completada!");
+    this.updateNeuralStats();
     this.unlockScreen('screen-completion');
     this.navigateTo('screen-completion');
     this.playSynthSound('success');
@@ -1122,10 +1197,21 @@ class MemoryHackApp {
   copyDossierToClipboard() {
     const d = this.state.reflectionData;
     const b = this.state.builderSelections;
+    const nn = this.state.neuralNet;
+    const nodesUnlocked = Object.values(nn.nodes).filter(n => n.unlocked).length;
+    const firstTryNodes = Object.values(nn.nodes).filter(n => n.unlocked && n.firstTry).length;
+    const connCount = nn.connections.size;
+    const rigor = nodesUnlocked > 0 ? `${Math.round((firstTryNodes / nodesUnlocked) * 100)}%` : '—';
+
     const text = `
 === HACK YOUR MEMORY 🧠 | INFORME D'APRENENTATGE ===
 Alumne/a: ${d.name}
 Punts d'Aprenentatge (XP): ${this.state.xp} XP
+
+🧠 XARXA DE CONEIXEMENT:
+- Conceptes consolidats: ${nodesUnlocked}/14
+- Connexions construïdes: ${connCount}/13
+- Rigor de justificacions (1r intent): ${rigor}
 
 1. ASSIGNATURA TRIADA:
 ${d.subject}
@@ -1155,6 +1241,239 @@ ${d.concept}
     if (confirm("Vols reiniciar el progrés i tornar a la pantalla inicial?")) {
       window.location.reload();
     }
+  }
+
+  // ============================================================
+  // NEURAL NETWORK SYSTEM
+  // ============================================================
+
+  trackWrongAnswer(nodeId) {
+    if (!this.state.neuralNet.nodes[nodeId]?.unlocked) {
+      this.state.neuralNet.wrongFirstNodes.add(nodeId);
+    }
+  }
+
+  unlockNode(nodeId, isFirstTryOverride = null) {
+    const nn = this.state.neuralNet;
+    if (nn.nodes[nodeId]?.unlocked) return; // Already unlocked
+
+    const isFirstTry = isFirstTryOverride !== null
+      ? isFirstTryOverride
+      : !nn.wrongFirstNodes.has(nodeId);
+
+    nn.nodes[nodeId] = { unlocked: true, firstTry: isFirstTry };
+
+    // Check for new connections
+    const newConns = this.checkNewConnections(nodeId);
+
+    // Show appropriate toast
+    if (newConns.length > 0) {
+      this.showNodeToast('connection', this.nodeDefinitions.find(n => n.id === nodeId)?.label || '');
+    } else {
+      this.showNodeToast('concept', this.nodeDefinitions.find(n => n.id === nodeId)?.label || '');
+    }
+
+    this.renderNeuralNet();
+    this.updateNeuralStats();
+  }
+
+  checkNewConnections(newNodeId) {
+    const nn = this.state.neuralNet;
+    const newConns = [];
+
+    this.connectionDefinitions.forEach(([a, b]) => {
+      const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
+      if (!nn.connections.has(key)) {
+        const nodeAOk = nn.nodes[a]?.unlocked;
+        const nodeBOk = nn.nodes[b]?.unlocked;
+        if (nodeAOk && nodeBOk) {
+          nn.connections.add(key);
+          newConns.push(key);
+        }
+      }
+    });
+
+    return newConns;
+  }
+
+  showNodeToast(type, label) {
+    const toast = document.getElementById('node-toast');
+    const toastIcon = document.getElementById('node-toast-icon');
+    const toastType = document.getElementById('node-toast-type');
+    const toastLabel = document.getElementById('node-toast-label');
+    if (!toast) return;
+
+    toast.classList.remove('show', 'connection-type');
+    toastType.classList.remove('connection-color');
+
+    if (type === 'connection') {
+      toastIcon.textContent = '🔗';
+      toastType.textContent = 'NOVA CONNEXIÓ';
+      toastType.classList.add('connection-color');
+      toast.classList.add('connection-type');
+    } else {
+      toastIcon.textContent = '⚡';
+      toastType.textContent = 'CONCEPTE CONSOLIDAT';
+    }
+    toastLabel.textContent = label;
+
+    // Trigger reflow then show
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(this._nodeToastTimer);
+    this._nodeToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  toggleNeuralPanel() {
+    const panel = document.getElementById('neural-panel');
+    const backdrop = document.getElementById('neural-backdrop');
+    if (!panel) return;
+    panel.classList.toggle('open');
+    backdrop.classList.toggle('open');
+    if (panel.classList.contains('open')) {
+      this.renderNeuralNet();
+      this.updateNeuralStats();
+    }
+  }
+
+  updateNeuralStats() {
+    const nn = this.state.neuralNet;
+    const nodesUnlocked = Object.values(nn.nodes).filter(n => n.unlocked).length;
+    const firstTryNodes = Object.values(nn.nodes).filter(n => n.unlocked && n.firstTry).length;
+    const connCount = nn.connections.size;
+    const rigor = nodesUnlocked > 0 ? Math.round((firstTryNodes / nodesUnlocked) * 100) : null;
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('nn-nodes-count', nodesUnlocked);
+    setEl('nn-header-nodes', nodesUnlocked);
+    setEl('nn-conn-count', connCount);
+    setEl('nn-rigor-pct', rigor !== null ? `${rigor}%` : '—');
+
+    // Completion screen stats
+    setEl('nn-final-nodes', `${nodesUnlocked}/14`);
+    setEl('nn-final-conns', `${connCount}/13`);
+    setEl('nn-final-rigor', rigor !== null ? `${rigor}%` : '—');
+  }
+
+  renderNeuralNet() {
+    const svg = document.getElementById('neural-net-svg');
+    if (!svg) return;
+
+    const nn = this.state.neuralNet;
+
+    // Clear
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const mk = (tag) => document.createElementNS(SVG_NS, tag);
+
+    // ── Defs (glow filters) ─────────────────────────────────────
+    const defs = mk('defs');
+    defs.innerHTML = `
+      <filter id="glow-blue" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-gold" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feColorMatrix in="blur" type="matrix"
+          values="1.2 0.5 0 0 0  0.8 0.8 0 0 0  0 0 0 0 0  0 0 0 0.9 0" result="c"/>
+        <feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>`;
+    svg.appendChild(defs);
+
+    // ── Connections ──────────────────────────────────────────────
+    this.connectionDefinitions.forEach(([a, b]) => {
+      const nA = this.nodeDefinitions.find(n => n.id === a);
+      const nB = this.nodeDefinitions.find(n => n.id === b);
+      const key = `${Math.min(a, b)}-${Math.max(a, b)}`;
+      const isActive = nn.connections.has(key);
+
+      const line = mk('line');
+      line.setAttribute('x1', nA.x); line.setAttribute('y1', nA.y);
+      line.setAttribute('x2', nB.x); line.setAttribute('y2', nB.y);
+
+      if (isActive) {
+        line.setAttribute('stroke', '#0284c7');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('opacity', '0.85');
+        line.setAttribute('class', 'nn-conn-active');
+      } else {
+        line.setAttribute('stroke', '#cbd5e1');
+        line.setAttribute('stroke-width', '1');
+        line.setAttribute('stroke-dasharray', '4,4');
+        line.setAttribute('opacity', '0.35');
+      }
+      svg.appendChild(line);
+    });
+
+    // ── Nodes ────────────────────────────────────────────────────
+    this.nodeDefinitions.forEach(nodeDef => {
+      const nodeState = nn.nodes[nodeDef.id];
+      const isUnlocked = nodeState?.unlocked;
+      const isFirstTry = nodeState?.firstTry;
+
+      const g = mk('g');
+      g.setAttribute('class', 'nn-node-group');
+
+      if (isUnlocked) {
+        // Glow ring
+        const ring = mk('circle');
+        ring.setAttribute('cx', nodeDef.x); ring.setAttribute('cy', nodeDef.y);
+        ring.setAttribute('r', '25');
+        ring.setAttribute('fill', isFirstTry ? 'rgba(245,158,11,0.18)' : 'rgba(2,132,199,0.14)');
+        ring.setAttribute('class', 'nn-glow-ring');
+        g.appendChild(ring);
+      }
+
+      // Main circle
+      const circle = mk('circle');
+      circle.setAttribute('cx', nodeDef.x); circle.setAttribute('cy', nodeDef.y);
+      circle.setAttribute('r', '17');
+      if (isUnlocked) {
+        circle.setAttribute('fill', isFirstTry ? '#f59e0b' : '#0284c7');
+        circle.setAttribute('stroke', isFirstTry ? '#d97706' : '#0369a1');
+        circle.setAttribute('stroke-width', '2');
+        circle.setAttribute('filter', isFirstTry ? 'url(#glow-gold)' : 'url(#glow-blue)');
+        circle.setAttribute('class', 'nn-node-circle active');
+      } else {
+        circle.setAttribute('fill', '#f8fafc');
+        circle.setAttribute('stroke', '#cbd5e1');
+        circle.setAttribute('stroke-width', '1.5');
+        circle.setAttribute('stroke-dasharray', '4,3');
+        circle.setAttribute('class', 'nn-node-circle inactive');
+      }
+      g.appendChild(circle);
+
+      // Node ID number (inside circle)
+      const numTxt = mk('text');
+      numTxt.setAttribute('x', nodeDef.x); numTxt.setAttribute('y', nodeDef.y + 4);
+      numTxt.setAttribute('text-anchor', 'middle');
+      numTxt.setAttribute('font-size', '9');
+      numTxt.setAttribute('font-weight', '800');
+      numTxt.setAttribute('font-family', 'system-ui, sans-serif');
+      numTxt.setAttribute('fill', isUnlocked ? '#ffffff' : '#94a3b8');
+      numTxt.textContent = nodeDef.id;
+      g.appendChild(numTxt);
+
+      // Label lines below node
+      const labelColor = isUnlocked ? (isFirstTry ? '#d97706' : '#0369a1') : '#94a3b8';
+      const labelWeight = isUnlocked ? '700' : '400';
+      nodeDef.short.forEach((line, i) => {
+        const lbl = mk('text');
+        lbl.setAttribute('x', nodeDef.x);
+        lbl.setAttribute('y', nodeDef.y + 30 + (i * 10));
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('font-size', '7.5');
+        lbl.setAttribute('font-weight', labelWeight);
+        lbl.setAttribute('font-family', 'system-ui, sans-serif');
+        lbl.setAttribute('fill', labelColor);
+        lbl.textContent = line;
+        g.appendChild(lbl);
+      });
+
+      svg.appendChild(g);
+    });
   }
 }
 

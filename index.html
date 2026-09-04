@@ -23,6 +23,9 @@
         <div class="xp-badge" id="xp-display" title="Punts d'aprenentatge">
           <span>⚡</span> <span id="xp-points">0</span> XP
         </div>
+        <button class="neural-btn" id="neural-btn" onclick="app.toggleNeuralPanel()" title="Consulta la teva xarxa de coneixement">
+          🧠 <span class="nn-counter"><span id="nn-header-nodes">0</span>/14</span>
+        </button>
         <button class="sound-toggle" id="sound-btn" onclick="app.toggleSound()" title="Activar/Desactivar efectes de so">
           🔊
         </button>
@@ -862,6 +865,33 @@
         </div>
       </div>
 
+      <!-- Neural Network Final Summary -->
+      <div class="card" style="border-color: #7dd3fc; background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <h3 style="color: #0369a1; font-size: 1.3rem; margin: 0;">🧠 LA TEVA XARXA ESTÀ CONSTRUÏDA</h3>
+          <button class="btn btn-secondary" onclick="app.toggleNeuralPanel()" style="font-size: 0.85rem; padding: 0.4rem 1rem;">
+            🔍 Veure xarxa completa
+          </button>
+        </div>
+        <p style="color: #475569; font-size: 0.95rem; margin-bottom: 1.25rem;">
+          No has aconseguit simplement punts d'XP: has construït una <strong>xarxa de coneixement interconnectada</strong> sobre el funcionament de la memòria de treball i la càrrega cognitiva.
+        </p>
+        <div class="neural-completion-grid">
+          <div class="nn-comp-stat">
+            <div class="stat-num" id="nn-final-nodes">0/14</div>
+            <div class="stat-desc">Conceptes Consolidats</div>
+          </div>
+          <div class="nn-comp-stat">
+            <div class="stat-num" id="nn-final-conns">0/13</div>
+            <div class="stat-desc">Connexions Teoria ↔ Pràctica</div>
+          </div>
+          <div class="nn-comp-stat">
+            <div class="stat-num" id="nn-final-rigor">—</div>
+            <div class="stat-desc">Rigor en Justificacions</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Mastery Badges -->
       <div class="card">
         <h3 style="color: #1e1b4b; font-size: 1.2rem; margin-bottom: 1rem;">🎖️ Insígnies de Competència Assolides</h3>
@@ -966,6 +996,68 @@
   <!-- Toast Notification -->
   <div class="toast-msg" id="app-toast">
     <span>✅</span> <span id="toast-text">Missatge de confirmació</span>
+  </div>
+
+  <!-- ============================================================
+       NEURAL NETWORK PANEL MODAL
+       ============================================================ -->
+  <div class="neural-panel-modal" id="neural-panel">
+    <div class="neural-panel-inner">
+      <!-- Header -->
+      <div class="neural-panel-header">
+        <h2>🧠 La teva Xarxa de Coneixement</h2>
+        <button class="neural-panel-close" onclick="app.toggleNeuralPanel()">✕</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="neural-stats-row">
+        <div class="nstat">
+          <span class="nstat-val" id="nn-nodes-count">0</span>
+          <span class="nstat-lbl">/ 14 conceptes</span>
+        </div>
+        <div class="nstat">
+          <span class="nstat-val" id="nn-conn-count">0</span>
+          <span class="nstat-lbl">/ 13 connexions</span>
+        </div>
+        <div class="nstat">
+          <span class="nstat-val" id="nn-rigor-pct">—</span>
+          <span class="nstat-lbl">rigor (1r intent)</span>
+        </div>
+      </div>
+
+      <!-- SVG Network -->
+      <div class="neural-svg-wrap">
+        <svg id="neural-net-svg" viewBox="0 0 400 640" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+
+      <!-- Legend -->
+      <div class="neural-legend">
+        <div class="nn-legend-item">
+          <div class="nn-legend-dot" style="background:#0284c7;"></div>
+          Consolidat
+        </div>
+        <div class="nn-legend-item">
+          <div class="nn-legend-dot" style="background:#f59e0b;"></div>
+          Primer intent
+        </div>
+        <div class="nn-legend-item">
+          <div class="nn-legend-dot" style="background:#e2e8f0;border:1px dashed #94a3b8;"></div>
+          Pendent
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Neural Panel Backdrop -->
+  <div class="neural-backdrop" id="neural-backdrop" onclick="app.toggleNeuralPanel()"></div>
+
+  <!-- Node Toast: CONCEPTE CONSOLIDAT / NOVA CONNEXIÓ -->
+  <div class="node-toast" id="node-toast">
+    <div class="node-toast-icon" id="node-toast-icon">⚡</div>
+    <div>
+      <div class="node-toast-type" id="node-toast-type">CONCEPTE CONSOLIDAT</div>
+      <div class="node-toast-label" id="node-toast-label">Memòria de treball</div>
+    </div>
   </div>
 
   <script src="app.js"></script>
