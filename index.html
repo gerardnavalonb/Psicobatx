@@ -90,10 +90,31 @@
           </div>
         </div>
 
-        <div style="margin-top: 2.25rem;">
-          <button class="btn btn-primary" style="font-size: 1.15rem; padding: 1rem 2.5rem;" onclick="app.startLevel1()">
+        <div style="margin-top: 2.25rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" style="font-size: 1.15rem; padding: 1rem 2.2rem;" onclick="app.startLevel1()">
             🚀 COMENÇA L'EXPERIMENT
           </button>
+          <button class="btn btn-secondary" style="font-size: 1.05rem; padding: 1rem 1.8rem; background: #ffffff; border: 2px solid #0284c7; color: #0284c7; font-weight: 800;" onclick="app.openTeacherAnalytics()">
+            👨‍🏫 VISTA PROFESSOR (Analítica)
+          </button>
+          <button class="btn btn-secondary" style="font-size: 1.05rem; padding: 1rem 1.8rem; background: #e0f2fe; border: 2px solid #38bdf8; color: #0369a1; font-weight: 800;" onclick="app.navigateToCompletionScreen()">
+            🧠 INFORME D'APRENENTATGE
+          </button>
+        </div>
+
+        <!-- Quick Access Banner for Teachers & Direct Report -->
+        <div style="margin-top: 2rem; background: #f8fafc; border: 1.5px solid #bae6fd; border-radius: var(--radius-md); padding: 1.15rem; text-align: left; max-width: 760px; margin-left: auto; margin-right: auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <strong style="color: #0f172a; font-size: 0.95rem;">👨‍🏫 Accés Docent i Avaluació del Procés:</strong>
+              <p style="color: #475569; font-size: 0.85rem; margin: 0.2rem 0 0 0;">
+                Pots consultar en qualsevol moment els indicadors de rigor, integració, coherència, autonomia i estat de consolidació conceptual.
+              </p>
+            </div>
+            <button class="btn btn-teacher-toggle" onclick="app.openTeacherAnalytics()" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              Obrir Diagnòstic Docent ➔
+            </button>
+          </div>
         </div>
       </div>
     </section>
