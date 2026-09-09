@@ -26,6 +26,9 @@
         <button class="neural-btn" id="neural-btn" onclick="app.scrollToNeuron()" title="Ves a la teva neurona del coneixement">
           🧠 <span class="nn-counter"><span id="nn-header-nodes">0</span>/14</span>
         </button>
+        <button class="teacher-header-btn" id="header-teacher-btn" onclick="app.openTeacherAnalytics()" title="Obrir Panell de Diagnòstic del Professor">
+          👨‍🏫 Professor
+        </button>
         <button class="sound-toggle" id="sound-btn" onclick="app.toggleSound()" title="Activar/Desactivar efectes de so">
           🔊
         </button>
@@ -52,6 +55,7 @@
         <button class="stage-pill locked" id="pill-level-5" onclick="app.navigateTo('screen-level-5')">5. Hacks</button>
         <button class="stage-pill locked" id="pill-final" onclick="app.navigateTo('screen-final-challenge')">Pla d'Estudi</button>
         <button class="stage-pill locked" id="pill-reflection" onclick="app.navigateTo('screen-reflection')">Reflexió</button>
+        <button class="stage-pill" id="pill-report" onclick="app.navigateToCompletionScreen()" style="border-color: #0284c7; color: #0284c7; font-weight: 800;">📊 Informe</button>
       </div>
     </div>
   </header>

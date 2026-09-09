@@ -378,6 +378,17 @@ class MemoryHackApp {
     this.setupVisibilityListeners();
     this.renderNeuralNet();
     this.updateNeuralStats();
+    this.generateLearningReport(); // Pre-populate initial metrics so report is never empty
+  }
+
+  navigateToCompletionScreen() {
+    this.unlockScreen('screen-completion');
+    this.generateLearningReport();
+    this.navigateTo('screen-completion');
+    const reportEl = document.getElementById('student-learning-report');
+    if (reportEl) {
+      setTimeout(() => reportEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
   }
 
   // --- DISTRACTION / TAB-SWITCH MONITORING ---

@@ -153,6 +153,28 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.teacher-header-btn {
+  background: #0f172a;
+  color: #38bdf8;
+  border: 1.5px solid #0284c7;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+.teacher-header-btn:hover {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: #38bdf8;
+  transform: translateY(-1px);
+}
+
 .sound-toggle {
   background: #ffffff;
   border: 1px solid var(--border-color);
