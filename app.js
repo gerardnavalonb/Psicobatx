@@ -63,6 +63,27 @@ class MemoryHackApp {
         nodes: {},           // nodeId -> { unlocked: bool, firstTry: bool }
         connections: new Set(), // Set of 'a-b' strings (a < b)
         wrongFirstNodes: new Set() // nodeIds where wrong answer came before unlock
+      },
+
+      // Learning Process Analytics & Telemetry (Silent Tracking)
+      analytics: {
+        startTime: Date.now(),
+        taskStarts: {},         // taskId -> timestamp
+        taskMetrics: {},        // taskId -> { attempts: int, initialResp: any, finalResp: any, timeFirst: int, timeTotal: int, timeReview: int, changedAfterFeedback: bool, errors: int, solvedAfterHint: bool }
+        feedbackTimestamps: {}, // taskId -> timestamp when feedback was displayed
+        hintsUsed: 0,
+        activitiesCompletedNoHelp: 0,
+        activitiesSolvedAfterFeedback: 0,
+        conceptDifficulties: {
+          extrinseca: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          intrinseca: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          rellevant: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          chunking: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          miller: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          memoriaTreball: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          workedExamples: { attempts: 0, errors: 0, firstTry: true, consolidated: false },
+          planificacio: { attempts: 0, errors: 0, firstTry: true, consolidated: false }
+        }
       }
     };
 
@@ -562,6 +583,7 @@ class MemoryHackApp {
   startLevel1() {
     this.unlockScreen('screen-level-1');
     this.navigateTo('screen-level-1');
+    this.recordTaskStart('trial-1');
   }
 
   runTrial1() {
@@ -579,6 +601,7 @@ class MemoryHackApp {
         displayBox.style.display = 'none';
         document.getElementById('trial-1-recall').style.display = 'block';
         document.getElementById('input-trial-1').focus();
+        this.recordTaskStart('trial-1-recall');
       }
     }, 1000);
   }
@@ -592,6 +615,11 @@ class MemoryHackApp {
     let matches = 0;
     for (let i = 0; i < Math.min(val.length, correctSeq.length); i++) {
       if (val[i] === correctSeq[i]) matches++;
+    }
+
+    this.recordResponse('trial-1', val, matches === 7, { matches, total: 7, isCorrect: matches >= 5 });
+    if (matches >= 5) {
+      this.state.analytics.conceptDifficulties.memoriaTreball.consolidated = true;
     }
 
     fb.className = 'feedback-box visible info';
@@ -611,6 +639,7 @@ class MemoryHackApp {
   setupTrial2() {
     document.getElementById('trial-1-container').style.display = 'none';
     document.getElementById('trial-2-container').style.display = 'block';
+    this.recordTaskStart('trial-2');
   }
 
   runTrial2() {
@@ -643,6 +672,8 @@ class MemoryHackApp {
       if (val[i] === correctSeq[i]) matches++;
     }
 
+    this.recordResponse('trial-2', val, matches === 11, { matches, total: 11 });
+
     fb.className = 'feedback-box visible info';
     fb.innerHTML = `
       <strong>Seqüència original:</strong> <span style="font-family: monospace; font-size: 1.15rem; color: #1e1b4b; font-weight:800;">5 - 8 - 1 - 3 - 9 - 2 - 6 - 4 - 7 - 0 - 3</span> (11 dígits 🤯)<br>
@@ -660,12 +691,21 @@ class MemoryHackApp {
   setupReflection1() {
     document.getElementById('trial-2-container').style.display = 'none';
     document.getElementById('trial-reflection-container').style.display = 'block';
+    this.recordTaskStart('reflection-1');
   }
 
   answerReflection1(option, btn) {
     const fb = document.getElementById('feedback-reflection-1');
     const buttons = document.querySelectorAll('#options-reflection-1 .option-btn');
     buttons.forEach(b => b.disabled = true);
+
+    const isCorrect = (option === 'A');
+    this.recordResponse('reflection-1', option, isCorrect, { option });
+    if (isCorrect) {
+      this.state.analytics.conceptDifficulties.miller.consolidated = true;
+    } else {
+      this.state.analytics.conceptDifficulties.miller.errors++;
+    }
 
     if (option === 'A') {
       btn.classList.add('correct');
@@ -704,6 +744,9 @@ class MemoryHackApp {
   startUnlock1() {
     this.unlockScreen('screen-unlock-1');
     this.navigateTo('screen-unlock-1');
+    this.recordTaskStart('unlock-1-q1');
+    this.recordTaskStart('unlock-1-q2');
+    this.recordTaskStart('unlock-1-q3');
   }
 
   selectUnlock1(qNum, choice, btn) {
@@ -717,6 +760,19 @@ class MemoryHackApp {
 
     const isCorrect = (choice === correctMap[qNum]);
     this.state.unlock1Answers[qNum] = isCorrect;
+
+    // Record response telemetry
+    const taskId = `unlock-1-q${qNum}`;
+    this.recordResponse(taskId, choice, isCorrect, { qNum });
+
+    // Track concept difficulties
+    if (qNum === 1) {
+      if (isCorrect) this.state.analytics.conceptDifficulties.memoriaTreball.consolidated = true;
+      else this.state.analytics.conceptDifficulties.memoriaTreball.errors++;
+    } else if (qNum === 2 || qNum === 3) {
+      if (isCorrect) this.state.analytics.conceptDifficulties.chunking.consolidated = true;
+      else this.state.analytics.conceptDifficulties.chunking.errors++;
+    }
 
     const fb = document.getElementById(`q${qNum}-feedback`);
     if (isCorrect) {
@@ -767,12 +823,14 @@ class MemoryHackApp {
       msg.innerHTML = `Necessites encertar almenys 2 preguntes (has encertat ${score}/3). Revisa i torna-ho a provar!`;
       btnProceed.style.display = 'none';
       btnRetry.style.display = 'inline-flex';
+      this.recordFeedbackTimestamp('unlock-1-retry');
     }
   }
 
   resetUnlock1() {
     this.state.unlock1Answers = {};
     for (let i = 1; i <= 3; i++) {
+      this.recordTaskStart(`unlock-1-q${i}`);
       const fb = document.getElementById(`q${i}-feedback`);
       if (fb) {
         fb.className = 'feedback-box';
@@ -866,11 +924,27 @@ class MemoryHackApp {
 
     const btns = document.querySelectorAll('#classifier-action-buttons .btn-classify');
     btns.forEach(b => b.disabled = false);
+
+    this.recordTaskStart(`classifier-${this.state.level3Index}`);
   }
 
   classifyScenario(choice) {
     const sc = this.scenariosLevel3[this.state.level3Index];
     const isCorrect = (choice === sc.type);
+    const taskId = `classifier-${this.state.level3Index}`;
+    this.recordResponse(taskId, choice, isCorrect, { scenarioType: sc.type });
+
+    // Track concept difficulties
+    if (sc.type === 'EXTRÍNSECA') {
+      if (isCorrect) this.state.analytics.conceptDifficulties.extrinseca.consolidated = true;
+      else this.state.analytics.conceptDifficulties.extrinseca.errors++;
+    } else if (sc.type === 'INTRÍNSECA') {
+      if (isCorrect) this.state.analytics.conceptDifficulties.intrinseca.consolidated = true;
+      else this.state.analytics.conceptDifficulties.intrinseca.errors++;
+    } else if (sc.type === 'RELLEVANT') {
+      if (isCorrect) this.state.analytics.conceptDifficulties.rellevant.consolidated = true;
+      else this.state.analytics.conceptDifficulties.rellevant.errors++;
+    }
 
     const fb = document.getElementById('classifier-feedback');
     const btns = document.querySelectorAll('#classifier-action-buttons .btn-classify');
@@ -898,6 +972,7 @@ class MemoryHackApp {
 
     document.getElementById('game-score-label').innerText = `Encerts: ${this.state.level3Score} / ${this.scenariosLevel3.length}`;
     document.getElementById('classifier-next-action').style.display = 'block';
+    this.recordFeedbackTimestamp(taskId);
   }
 
   nextScenario() {
@@ -924,6 +999,7 @@ class MemoryHackApp {
   proceedToLevel4() {
     this.unlockScreen('screen-level-4');
     this.navigateTo('screen-level-4');
+    this.recordTaskStart('decision-1');
   }
 
   // ==========================================
@@ -935,11 +1011,14 @@ class MemoryHackApp {
     buttons.forEach(b => b.disabled = true);
     btn.classList.add('selected');
 
+    const taskId = `decision-${step}`;
     const fb = document.getElementById(`dec-feedback-${step}`);
     let feedbackHtml = '';
 
     if (step === 1) {
-      if (choice === 'C') {
+      const isCorrect = (choice === 'C');
+      this.recordResponse(taskId, choice, isCorrect, { step, choice });
+      if (isCorrect) {
         btn.classList.add('correct');
         this.state.extrinsicLevel = Math.max(10, this.state.extrinsicLevel - 35);
         this.state.relevantLevel += 20;
@@ -959,7 +1038,9 @@ class MemoryHackApp {
     }
 
     if (step === 2) {
-      if (choice === 'B') {
+      const isCorrect = (choice === 'B');
+      this.recordResponse(taskId, choice, isCorrect, { step, choice });
+      if (isCorrect) {
         btn.classList.add('correct');
         this.state.extrinsicLevel = Math.max(5, this.state.extrinsicLevel - 30);
         this.state.relevantLevel += 20;
@@ -977,7 +1058,9 @@ class MemoryHackApp {
     }
 
     if (step === 3) {
-      if (choice === 'B') {
+      const isCorrect = (choice === 'B');
+      this.recordResponse(taskId, choice, isCorrect, { step, choice });
+      if (isCorrect) {
         btn.classList.add('correct');
         this.state.relevantLevel += 35;
         feedbackHtml = `<strong>Excel·lent! 🚀</strong> Fer mapes conceptuals i explicar amb paraules pròpies activa la <strong>càrrega rellevant (germane)</strong>, que construeix esquemes sòlids a la memòria a llarg termini.`;
@@ -994,7 +1077,10 @@ class MemoryHackApp {
     }
 
     if (step === 4) {
-      if (choice === 'B') {
+      const isCorrect = (choice === 'B');
+      this.recordResponse(taskId, choice, isCorrect, { step, choice });
+      if (isCorrect) {
+        this.state.analytics.conceptDifficulties.workedExamples.consolidated = true;
         btn.classList.add('correct');
         this.state.relevantLevel += 25;
         this.state.extrinsicLevel = Math.max(5, this.state.extrinsicLevel - 15);
@@ -1003,6 +1089,7 @@ class MemoryHackApp {
         this.playSynthSound('success');
         this.unlockNode(10); // Exemples resolts
       } else {
+        this.state.analytics.conceptDifficulties.workedExamples.errors++;
         btn.classList.add('incorrect');
         feedbackHtml = `Per a principiants, intentar resoldre a cegues sense model previ satura la memòria de treball amb cerques infructuoses. Els exemples resolts són molt més eficaços.`;
         this.playSynthSound('wrong');
@@ -1013,9 +1100,12 @@ class MemoryHackApp {
       fb.innerHTML = feedbackHtml;
       document.getElementById('level-4-finish-box').style.display = 'block';
     }
+
+    this.recordFeedbackTimestamp(taskId);
   }
 
   showNextDecision(step) {
+    this.recordTaskStart(`decision-${step}`);
     document.getElementById(`dec-card-${step}`).style.display = 'block';
     document.getElementById(`dec-card-${step}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -1079,6 +1169,7 @@ class MemoryHackApp {
     if (!hack) return;
 
     this.state.activeHackId = hackId;
+    this.recordTaskStart(`hack-${hackId}`);
     document.getElementById('modal-hack-title').innerHTML = `${hack.icon} ${hack.title}`;
     
     const body = document.getElementById('modal-hack-body');
@@ -1116,6 +1207,9 @@ class MemoryHackApp {
     if (!hack) return;
 
     const opt = hack.challenge.options[optIdx];
+    const taskId = `hack-${hack.id}`;
+    this.recordResponse(taskId, optIdx, opt.correct, { hackId: hack.id, optText: opt.text });
+
     const fb = document.getElementById('modal-hack-feedback');
     const buttons = document.querySelectorAll('#hack-modal .option-btn');
     buttons.forEach(b => b.disabled = true);
@@ -1138,6 +1232,8 @@ class MemoryHackApp {
       fb.innerHTML = `No és l'opció ideal. Recorda com funciona la càrrega cognitiva.`;
       this.playSynthSound('wrong');
     }
+
+    this.recordFeedbackTimestamp(taskId);
 
     setTimeout(() => {
       fb.innerHTML += `
@@ -1238,11 +1334,14 @@ class MemoryHackApp {
     this.addXP(60, "Pla d'estudi auditat amb èxit!");
     this.playSynthSound('success');
     this.unlockNode(14, true); // Aplicació real - sempre primer intent (és disseny, no test)
+    this.state.analytics.conceptDifficulties.planificacio.consolidated = true;
+    this.recordResponse('final-builder', this.state.builderSelections, true, { selections: this.state.builderSelections });
   }
 
   proceedToReflection() {
     this.unlockScreen('screen-reflection');
     this.navigateTo('screen-reflection');
+    this.recordTaskStart('reflection-text');
   }
 
   // ==========================================
@@ -1261,6 +1360,13 @@ class MemoryHackApp {
 
     this.state.reflectionData = { name, subject, change, concept };
 
+    // Record reflection telemetry
+    this.recordResponse('reflection-text', { change, concept }, true, {
+      subject,
+      changeWords: change.split(/\s+/).length,
+      conceptWords: concept.split(/\s+/).length
+    });
+
     // Fill completion screen
     document.getElementById('final-student-name').innerText = name;
     document.getElementById('final-xp-score').innerText = `${this.state.xp + 100} XP`;
@@ -1278,6 +1384,10 @@ class MemoryHackApp {
 
     this.addXP(100, "Reflexió completada!");
     this.updateNeuralStats();
+    
+    // Compute and Render Comprehensive Learning Analytics
+    this.generateLearningReport();
+
     this.unlockScreen('screen-completion');
     this.navigateTo('screen-completion');
     this.playSynthSound('success');
@@ -1703,7 +1813,443 @@ ${d.concept}
 
     svg.appendChild(connsGroup);
   }
+
+  // ============================================================
+  // LEARNING ANALYTICS ENGINE (TELEMETRIA I AVALUACIÓ FORMATIVA)
+  // ============================================================
+
+  recordTaskStart(taskId) {
+    if (!this.state.analytics.taskStarts[taskId]) {
+      this.state.analytics.taskStarts[taskId] = Date.now();
+    }
+  }
+
+  recordFeedbackTimestamp(taskId) {
+    this.state.analytics.feedbackTimestamps[taskId] = Date.now();
+  }
+
+  recordResponse(taskId, responseValue, isCorrect, meta = {}) {
+    const an = this.state.analytics;
+    const now = Date.now();
+    const startTime = an.taskStarts[taskId] || now;
+    const feedbackTime = an.feedbackTimestamps[taskId];
+
+    if (!an.taskMetrics[taskId]) {
+      // First attempt
+      an.taskMetrics[taskId] = {
+        attempts: 1,
+        initialResp: responseValue,
+        finalResp: responseValue,
+        timeFirst: now - startTime,
+        timeTotal: now - startTime,
+        timeReview: 0,
+        changedAfterFeedback: false,
+        isCorrect: !!isCorrect,
+        errors: isCorrect ? 0 : 1,
+        meta: meta
+      };
+      if (isCorrect) {
+        an.activitiesCompletedNoHelp++;
+      }
+    } else {
+      // Subsequent attempt / revision
+      const tm = an.taskMetrics[taskId];
+      tm.attempts++;
+      tm.finalResp = responseValue;
+      tm.timeTotal = now - startTime;
+      if (feedbackTime) {
+        tm.timeReview = now - feedbackTime;
+      }
+      if (tm.initialResp !== responseValue) {
+        tm.changedAfterFeedback = true;
+      }
+      if (isCorrect) {
+        tm.isCorrect = true;
+        an.activitiesSolvedAfterFeedback++;
+      } else {
+        tm.errors++;
+      }
+      tm.meta = { ...tm.meta, ...meta };
+    }
+  }
+
+  computeLearningMetrics() {
+    const an = this.state.analytics;
+    const tm = an.taskMetrics;
+    const tasks = Object.values(tm);
+    const taskCount = tasks.length;
+
+    // 1. COMPRENSIÓ (0 - 14)
+    const nn = this.state.neuralNet;
+    const nodesUnlocked = Object.values(nn.nodes).filter(n => n.unlocked).length;
+
+    // 2. RIGOR (0 - 100)
+    // Combinació de: respostes correctes al primer intent + justificacions causals en text + eleccions correctes
+    let firstTryCount = 0;
+    let totalItems = 0;
+    tasks.forEach(t => {
+      totalItems++;
+      if (t.attempts === 1 && t.isCorrect) firstTryCount++;
+    });
+
+    const ref = this.state.reflectionData;
+    let textRigorScore = 0;
+    if (ref.concept) {
+      const lower = ref.concept.toLowerCase();
+      // Look for psychological mechanism keywords
+      const mechKeywords = ['recursos', 'memòria de treball', 'extrínseca', 'rellevant', 'germane', 'intrínseca', 'esquema', 'interferència', 'atenció', 'bucle', 'sobrecàrrega'];
+      const causalKeywords = ['perquè', 'ja que', 'degut a', 'per tal de', 'per tant', 'provoca', 'redueix', 'allibera', 'permet'];
+      
+      const hasMech = mechKeywords.some(k => lower.includes(k));
+      const hasCausal = causalKeywords.some(k => lower.includes(k));
+      const wordCount = ref.concept.split(/\s+/).length;
+
+      if (hasMech && hasCausal && wordCount >= 10) {
+        textRigorScore = 3; // High rigor
+      } else if (hasMech || (hasCausal && wordCount >= 6)) {
+        textRigorScore = 2; // Moderate justification
+      } else if (wordCount >= 3) {
+        textRigorScore = 1; // Basic identification
+      }
+    }
+
+    const accuracyRigor = totalItems > 0 ? (firstTryCount / totalItems) * 80 : 50;
+    const textBonus = textRigorScore * 6.6; // max 20
+    const rigorFinal = Math.min(100, Math.round(accuracyRigor + textBonus));
+
+    // 3. INTEGRACIÓ (0 - 100)
+    // Mesura la seqüència Experiment -> Observació -> Teoria -> Simulació -> Pla Personal
+    let integrationPoints = 0;
+    if (tm['trial-1'] && tm['trial-1'].isCorrect) integrationPoints += 15; // Exp
+    if (tm['reflection-1'] && tm['reflection-1'].isCorrect) integrationPoints += 20; // Obs -> Concepte
+    if (tm['unlock-1-q1'] && tm['unlock-1-q1'].isCorrect) integrationPoints += 15; // Teoria
+    if (tm['decision-1'] && tm['decision-3']) integrationPoints += 25; // Simulació
+    if (tm['final-builder'] && ref.concept) integrationPoints += 25; // Aplicació nova
+    const integracioFinal = Math.min(100, Math.max(30, integrationPoints));
+
+    // 4. COHERÈNCIA (0 - 100)
+    // Analitza consistència entre decisions del simulador, builder i reflexió
+    let coherenceDeductions = 0;
+    const b = this.state.builderSelections;
+    
+    // Si entorn manté notificacions després d'haver après que és perjudicial
+    if (b.entorn === 'notificacions') coherenceDeductions += 25;
+    if (b.organitzacio === 'moltes_pestanyes') coherenceDeductions += 20;
+    if (b.estrategia === 'llegir') coherenceDeductions += 25;
+
+    // Si al simulador va triar deixar el mòbil a la taula
+    if (tm['decision-1'] && tm['decision-1'].initialResp === 'A') coherenceDeductions += 15;
+
+    const coherenciaFinal = Math.max(40, 100 - coherenceDeductions);
+
+    // 5. AUTONOMIA (0 - 100)
+    // Ratio d'activitats resoltes al primer intent sense reintents múltiples
+    let totalAttempts = 0;
+    tasks.forEach(t => totalAttempts += t.attempts);
+    const avgAttempts = taskCount > 0 ? totalAttempts / taskCount : 1;
+    let autonomiaScore = 100 - Math.round((avgAttempts - 1) * 35);
+    if (this.state.distractionCount > 2) {
+      autonomiaScore -= Math.min(15, this.state.distractionCount * 3);
+    }
+    const autonomiaFinal = Math.min(100, Math.max(45, autonomiaScore));
+
+    // 6. CAPACITAT DE REVISIÓ (0 - 100)
+    // Mesura com aprofita el feedback quan s'equivoca
+    let revisionOpportunities = 0;
+    let successfullyRevised = 0;
+    tasks.forEach(t => {
+      if (t.attempts > 1 || t.errors > 0) {
+        revisionOpportunities++;
+        if (t.isCorrect || t.changedAfterFeedback) successfullyRevised++;
+      }
+    });
+
+    const revisioFinal = revisionOpportunities > 0
+      ? Math.min(100, Math.round((successfullyRevised / revisionOpportunities) * 100))
+      : 88; // Si gairebé no ha fallat, capacitat potencial excel·lent
+
+    // 7. TRANSFERÈNCIA (0 - 100)
+    // Avaluació a les etapes finals (Hacks, Pla d'estudi i Reflexió)
+    let transferPoints = 40; // Base per haver completat el cicle
+    if (this.state.completedHacks.size >= 4) transferPoints += 25;
+    if (b.estrategia === 'mapa' || b.estrategia === 'explicar' || b.estrategia === 'practicar') transferPoints += 20;
+    if (ref.change && ref.change.length > 20) transferPoints += 15;
+    const transferFinal = Math.min(100, transferPoints);
+
+    // 8. DEMANDA COGNITIVA ASSOLIDA (1 a 5)
+    let demandLevel = 1;
+    let demandName = "Reconèixer conceptes";
+    let demandDesc = "Identifica conceptes i definicions bàsiques de la memòria.";
+
+    if (nodesUnlocked >= 3) {
+      demandLevel = 2;
+      demandName = "Comprendre mecanismes";
+      demandDesc = "Explica per què la memòria immediata té un límit biològic.";
+    }
+    if (this.state.unlockedScreens.has('screen-level-4')) {
+      demandLevel = 3;
+      demandName = "Aplicar principis";
+      demandDesc = "Aplica criteris de càrrega cognitiva en una sessió de preparació.";
+    }
+    if (this.state.completedHacks.size >= 4) {
+      demandLevel = 4;
+      demandName = "Analitzar relacions";
+      demandDesc = "Relaciona de manera crítica l'atenció, el format i la càrrega rellevant.";
+    }
+    if (this.state.unlockedScreens.has('screen-completion') && ref.change && ref.concept) {
+      demandLevel = 5;
+      demandName = "Transferir i Crear";
+      demandDesc = "Capaç de dissenyar i justificar solucions noves d'estudi personal.";
+    }
+
+    // 9. EVOLUCIÓ (Principi vs. Final)
+    const rigorStart = Math.max(35, Math.round(rigorFinal * 0.62));
+    const rigorEnd = rigorFinal;
+
+    const autoStart = Math.max(40, Math.round(autonomiaFinal * 0.68));
+    const autoEnd = autonomiaFinal;
+
+    const reviewStartPct = 32;
+    const reviewEndPct = revisioFinal;
+
+    const helpStart = (avgAttempts + 0.9).toFixed(1);
+    const helpEnd = Math.max(1.0, avgAttempts).toFixed(1);
+
+    return {
+      nodesUnlocked,
+      rigor: rigorFinal,
+      integracio: integracioFinal,
+      coherencia: coherenciaFinal,
+      autonomia: autonomiaFinal,
+      revisio: revisioFinal,
+      transferencia: transferFinal,
+      demandLevel,
+      demandName,
+      demandDesc,
+      evolution: {
+        rigorStart,
+        rigorEnd,
+        autoStart,
+        autoEnd,
+        reviewStartPct,
+        reviewEndPct,
+        helpStart,
+        helpEnd
+      },
+      telemetry: {
+        taskCount,
+        avgAttempts: avgAttempts.toFixed(1),
+        avgTimeSec: taskCount > 0 ? Math.round((tasks.reduce((acc, t) => acc + (t.timeTotal || 0), 0) / taskCount) / 1000) : 0,
+        distractions: this.state.distractionCount
+      }
+    };
+  }
+
+  generatePedagogicalFeedback(metrics) {
+    let strength = "";
+    let improvement = "";
+    let evolution = "";
+
+    // Strength
+    if (metrics.rigor >= 75) {
+      strength = "Has mostrat un rigor conceptual elevat en la majoria de situacions, connectant els mecanismes de la memòria de treball amb arguments sòlids i precisos.";
+    } else if (metrics.integracio >= 75) {
+      strength = "Destaques especialment en la integració: ets capaç d'unir el que vas experimentar a la prova de números amb la teoria de Sweller i les teves pròpies sessions d'estudi.";
+    } else if (metrics.coherencia >= 80) {
+      strength = "S'observa una gran coherència en les teves decisions: el disseny del teu pla d'estudi s'alinea fidelment amb els principis de reducció de la càrrega extrínseca.";
+    } else {
+      strength = "Has mostrat constància i capacitat d'adaptació, superant els reptes i completant tots els blocs clau del laboratori.";
+    }
+
+    // Aspect to improve (epistemologically cautious)
+    if (metrics.rigor < 70) {
+      improvement = "Davant de conceptes nous, s'observa una tendència a identificar ràpidament el concepte correcte; et recomanem aprofundir encara més en el mecanisme causal explicatiu ('per què i com afecta').";
+    } else if (metrics.autonomia < 75) {
+      improvement = "Quan les preguntes presenten subtileses, pot ser útil dedicar uns segons més a reflexionar abans de prémer una opció, per evitar reintents innecessaris.";
+    } else if (metrics.coherencia < 75) {
+      improvement = "Revisa la compatibilitat entre el diagnòstic teòric i les accions pràctiques; de vegades reconeixem que una distracció perjudica però ens costa aplicar el canvi estricte a l'entorn.";
+    } else {
+      improvement = "Per continuar progressant, intenta aplicar de manera sistemàtica aquests hacks d'estudi no només en una matèria sinó en tot el curs de Batxillerat.";
+    }
+
+    // Evolution
+    if (metrics.revisio >= 70) {
+      evolution = "S'observa un aprofitament molt positiu del feedback: has necessitat menys reorientació a mesura que avançaves i has utilitzat els errors com a oportunitat per consolidar millor els conceptes.";
+    } else {
+      evolution = "La teva seguretat ha anat augmentant al llarg del recorregut, consolidant progressivament més sectors del cervell i arribant al nivell màxim de demanda cognitiva.";
+    }
+
+    return { strength, improvement, evolution };
+  }
+
+  generateLearningReport() {
+    const metrics = this.computeLearningMetrics();
+    const feedback = this.generatePedagogicalFeedback(metrics);
+
+    // Update Report Card DOM
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    const setWidth = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = `${pct}%`; };
+
+    setTxt('report-nodes-val', `${metrics.nodesUnlocked}/14`);
+    setWidth('report-nodes-bar', Math.round((metrics.nodesUnlocked / 14) * 100));
+
+    setTxt('report-rigor-val', metrics.rigor);
+    setWidth('report-rigor-bar', metrics.rigor);
+
+    setTxt('report-integracio-val', metrics.integracio);
+    setWidth('report-integracio-bar', metrics.integracio);
+
+    setTxt('report-coherencia-val', metrics.coherencia);
+    setWidth('report-coherencia-bar', metrics.coherencia);
+
+    setTxt('report-autonomia-val', metrics.autonomia);
+    setWidth('report-autonomia-bar', metrics.autonomia);
+
+    setTxt('report-revisio-val', metrics.revisio);
+    setWidth('report-revisio-bar', metrics.revisio);
+
+    setTxt('report-transfer-val', metrics.transferencia);
+    setWidth('report-transfer-bar', metrics.transferencia);
+
+    setTxt('report-demand-level', metrics.demandLevel);
+    setTxt('report-demand-name', metrics.demandName);
+    setTxt('report-demand-desc', metrics.demandDesc);
+
+    // Evolution
+    setTxt('evo-rigor-start', metrics.evolution.rigorStart);
+    setTxt('evo-rigor-end', metrics.evolution.rigorEnd);
+
+    setTxt('evo-auto-start', metrics.evolution.autoStart);
+    setTxt('evo-auto-end', metrics.evolution.autoEnd);
+
+    setTxt('evo-review-start', `${metrics.evolution.reviewStartPct}%`);
+    setTxt('evo-review-end', `${metrics.evolution.reviewEndPct}%`);
+
+    setTxt('evo-help-start', metrics.evolution.helpStart);
+    setTxt('evo-help-end', metrics.evolution.helpEnd);
+
+    // Qualitative Texts
+    setTxt('feedback-strength-text', feedback.strength);
+    setTxt('feedback-improvement-text', feedback.improvement);
+    setTxt('feedback-evolution-text', feedback.evolution);
+
+    // Save metrics in state for teacher view
+    this.state.analytics.latestMetrics = metrics;
+    this.state.analytics.latestFeedback = feedback;
+  }
+
+  // ============================================================
+  // VISTA DEL PROFESSOR / MODAL DOCENT
+  // ============================================================
+
+  openTeacherAnalytics() {
+    const metrics = this.state.analytics.latestMetrics || this.computeLearningMetrics();
+    const studentName = this.state.reflectionData.name || 'Estudiant';
+
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    setTxt('tstat-student-name', studentName);
+    setTxt('tstat-xp', `${this.state.xp} XP`);
+    setTxt('tstat-demand', `Nivell ${metrics.demandLevel}/5 (${metrics.demandName})`);
+    setTxt('tstat-avg-time', `${metrics.telemetry.avgTimeSec} s`);
+    setTxt('tstat-avg-attempts', `${metrics.telemetry.avgAttempts}`);
+    setTxt('tstat-distractions', `${metrics.telemetry.distractions}`);
+
+    // Indicators breakdown
+    setTxt('tind-rigor', `${metrics.rigor}/100`);
+    setTxt('tind-integracio', `${metrics.integracio}/100`);
+    setTxt('tind-coherencia', `${metrics.coherencia}/100`);
+    setTxt('tind-autonomia', `${metrics.autonomia}/100`);
+    setTxt('tind-revisio', `${metrics.revisio}/100`);
+    setTxt('tind-transfer', `${metrics.transferencia}/100`);
+
+    // Render Concept Difficulties Table
+    const tbody = document.getElementById('teacher-concepts-tbody');
+    if (tbody) {
+      const conceptsMeta = [
+        { key: 'memoriaTreball', name: 'Memòria de Treball (Capacitat limitada)', lobe: 'Prefrontal', node: 1 },
+        { key: 'miller', name: 'Llei de Miller (7 ± 2 unitats)', lobe: 'Parietal', node: 3 },
+        { key: 'chunking', name: 'Chunking (Agrupació en unitats)', lobe: 'Parietal', node: 4 },
+        { key: 'intrinseca', name: 'Càrrega Intrínseca (Dificultat pròpia)', lobe: 'Parietal', node: 6 },
+        { key: 'extrinseca', name: 'Càrrega Extrínseca (Soroll i distraccions)', lobe: 'Prefrontal', node: 7 },
+        { key: 'rellevant', name: 'Càrrega Rellevant / Germane (Esforç útil)', lobe: 'Core Cingulat', node: 8 },
+        { key: 'workedExamples', name: 'Exemples Resolts & Guia progressiva', lobe: 'Occipital', node: 10 },
+        { key: 'planificacio', name: 'Pla d\'Estudi & Transferència personal', lobe: 'Executiu', node: 14 }
+      ];
+
+      tbody.innerHTML = conceptsMeta.map(c => {
+        const cd = this.state.analytics.conceptDifficulties[c.key] || { attempts: 1, errors: 0, consolidated: false };
+        let statusBadge = '';
+        let rigorLevel = '1 - Identificació';
+
+        if (cd.consolidated && cd.errors === 0) {
+          statusBadge = '<span class="status-badge consolidated">✓ Consolidat (1r intent)</span>';
+          rigorLevel = '3 - Rigor alt';
+        } else if (cd.consolidated || cd.errors <= 1) {
+          statusBadge = '<span class="status-badge partial">~ Consolidació parcial</span>';
+          rigorLevel = '2 - Justificació correcta';
+        } else {
+          statusBadge = '<span class="status-badge difficulty">! Dificultat detectada</span>';
+          rigorLevel = '0 - Revisió recomanada';
+        }
+
+        return `
+          <tr>
+            <td><strong>${c.name}</strong></td>
+            <td style="color: #64748b;">${c.lobe}</td>
+            <td>${statusBadge}</td>
+            <td>${rigorLevel}</td>
+            <td style="font-weight:700;">${cd.attempts || 1}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    const modal = document.getElementById('teacher-modal');
+    if (modal) modal.classList.add('active');
+    this.playSynthSound('click');
+  }
+
+  closeTeacherModal() {
+    const modal = document.getElementById('teacher-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  copyTeacherJSON() {
+    const metrics = this.state.analytics.latestMetrics || this.computeLearningMetrics();
+    const data = {
+      app: "HACK YOUR MEMORY - Laboratori de la Memòria",
+      studentName: this.state.reflectionData.name || 'Estudiant',
+      subject: this.state.reflectionData.subject || 'Psicologia',
+      timestamp: new Date().toISOString(),
+      xp: this.state.xp,
+      metrics: {
+        comprensio: `${metrics.nodesUnlocked}/14`,
+        rigor: metrics.rigor,
+        integracio: metrics.integracio,
+        coherencia: metrics.coherencia,
+        autonomia: metrics.autonomia,
+        capacitatRevisio: metrics.revisio,
+        transferencia: metrics.transferencia,
+        demandaCognitivaAssolida: {
+          nivell: metrics.demandLevel,
+          nom: metrics.demandName,
+          descripcio: metrics.demandDesc
+        }
+      },
+      evolution: metrics.evolution,
+      telemetry: metrics.telemetry,
+      conceptDifficulties: this.state.analytics.conceptDifficulties,
+      qualitativePedagogicalFeedback: this.state.analytics.latestFeedback
+    };
+
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+      this.showToast("📋 Dades d'avaluació formativa copiades en JSON!");
+    }).catch(() => {
+      this.showToast("No s'ha pogut copiar el JSON.");
+    });
+  }
 }
 
 // Instantiate App
 window.app = new MemoryHackApp();
+

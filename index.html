@@ -905,6 +905,221 @@
         </div>
       </div>
 
+      <!-- ============================================================
+           🧠 INFORME DEL TEU APRENENTATGE (ANÀLISI AUTOMÀTICA DE PROCÉS)
+           ============================================================ -->
+      <div class="card learning-report-card" id="student-learning-report">
+        <div class="report-header">
+          <div class="report-header-badge">
+            <span class="report-pulse-icon">📊</span>
+            <div>
+              <span class="report-eyebrow">AVALUACIÓ FORMATIVA DEL PROCÉS</span>
+              <h2 class="report-title">🧠 INFORME DEL TEU APRENENTATGE</h2>
+              <p class="report-subtitle">Anàlisi automàtica del teu rigor, integració, coherència i autonomia durant les activitats realitzades.</p>
+            </div>
+          </div>
+          <button class="btn btn-teacher-toggle" id="btn-open-teacher-modal" onclick="app.openTeacherAnalytics()">
+            👨‍🏫 Vista del Professor
+          </button>
+        </div>
+
+        <!-- Metric Grid (0-100 & Cognitive Demand) -->
+        <div class="analytics-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🧩</span>
+              <span class="metric-label">COMPRENSIÓ</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-nodes-val">0/14</span>
+              <span class="metric-scale">consolidats</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-nodes-bar" style="width: 0%; background: #0284c7;"></div>
+            </div>
+            <span class="metric-hint" id="report-nodes-hint">Conceptes clau demostrats</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🎯</span>
+              <span class="metric-label">RIGOR</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-rigor-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-rigor-bar" style="width: 0%; background: #f59e0b;"></div>
+            </div>
+            <span class="metric-hint" id="report-rigor-hint">Mecanisme causal i precisió</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🔗</span>
+              <span class="metric-label">INTEGRACIÓ</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-integracio-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-integracio-bar" style="width: 0%; background: #059669;"></div>
+            </div>
+            <span class="metric-hint" id="report-integracio-hint">Experiment ➔ Concepte ➔ Pràctica</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">⚖️</span>
+              <span class="metric-label">COHERÈNCIA</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-coherencia-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-coherencia-bar" style="width: 0%; background: #6366f1;"></div>
+            </div>
+            <span class="metric-hint" id="report-coherencia-hint">Consistència decisió-teoria</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🧗</span>
+              <span class="metric-label">AUTONOMIA</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-autonomia-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-autonomia-bar" style="width: 0%; background: #0284c7;"></div>
+            </div>
+            <span class="metric-hint" id="report-autonomia-hint">Resolució amb poca o cap ajuda</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🔄</span>
+              <span class="metric-label">CAPACITAT REVISIÓ</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-revisio-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-revisio-bar" style="width: 0%; background: #10b981;"></div>
+            </div>
+            <span class="metric-hint" id="report-revisio-hint">Millora després del feedback</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🚀</span>
+              <span class="metric-label">TRANSFERÈNCIA</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num" id="report-transfer-val">0</span>
+              <span class="metric-scale">/100</span>
+            </div>
+            <div class="metric-progress-track">
+              <div class="metric-progress-bar" id="report-transfer-bar" style="width: 0%; background: #8b5cf6;"></div>
+            </div>
+            <span class="metric-hint" id="report-transfer-hint">Aplicació a situacions noves</span>
+          </div>
+
+          <div class="metric-card cognitive-demand-card">
+            <div class="metric-card-top">
+              <span class="metric-icon">🧠</span>
+              <span class="metric-label">DEMANDA COGNITIVA</span>
+            </div>
+            <div class="metric-value-row">
+              <span class="metric-num-highlight">Nivell <span id="report-demand-level">5</span></span>
+              <span class="metric-scale">/5</span>
+            </div>
+            <div class="demand-level-name" id="report-demand-name">Transferir i Crear</div>
+            <span class="metric-hint" id="report-demand-desc">Capaç de dissenyar i justificar solucions en contextos nous</span>
+          </div>
+        </div>
+
+        <!-- Evolution Comparison: Principi vs Final -->
+        <div class="evolution-box">
+          <div class="evolution-title">
+            <span>📈 EVOLUCIÓ DURANT EL LABORATORI (PRINCIPI ➔ FINAL)</span>
+          </div>
+          <div class="evolution-grid">
+            <div class="evolution-item">
+              <span class="evo-label">Rigor explicatiu</span>
+              <div class="evo-vals">
+                <span class="evo-start" id="evo-rigor-start">45</span>
+                <span class="evo-arrow">➔</span>
+                <span class="evo-end" id="evo-rigor-end">85</span>
+                <span class="evo-trend up" id="evo-rigor-trend">↑</span>
+              </div>
+            </div>
+            <div class="evolution-item">
+              <span class="evo-label">Autonomia resolutiva</span>
+              <div class="evo-vals">
+                <span class="evo-start" id="evo-auto-start">50</span>
+                <span class="evo-arrow">➔</span>
+                <span class="evo-end" id="evo-auto-end">88</span>
+                <span class="evo-trend up" id="evo-auto-trend">↑</span>
+              </div>
+            </div>
+            <div class="evolution-item">
+              <span class="evo-label">Respostes millorades amb feedback</span>
+              <div class="evo-vals">
+                <span class="evo-start" id="evo-review-start">30%</span>
+                <span class="evo-arrow">➔</span>
+                <span class="evo-end" id="evo-review-end">80%</span>
+                <span class="evo-trend up" id="evo-review-trend">↑</span>
+              </div>
+            </div>
+            <div class="evolution-item">
+              <span class="evo-label">Necessitat d'ajuda / reintents</span>
+              <div class="evo-vals">
+                <span class="evo-start" id="evo-help-start">2.4</span>
+                <span class="evo-arrow">➔</span>
+                <span class="evo-end" id="evo-help-end">1.1</span>
+                <span class="evo-trend down" id="evo-help-trend">↓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Automatic Pedagogical Qualitative Feedback -->
+        <div class="qualitative-feedback-box">
+          <div class="feedback-block strength">
+            <div class="feedback-heading">
+              <span>🌟 PUNT FORT DETECTAT</span>
+            </div>
+            <p id="feedback-strength-text" class="feedback-text">
+              Has demostrat una notable capacitat per connectar els conceptes de la càrrega cognitiva amb situacions d'estudi concretes.
+            </p>
+          </div>
+
+          <div class="feedback-block improvement">
+            <div class="feedback-heading">
+              <span>🎯 ASPECTE A CONTINUAR MILLORANT</span>
+            </div>
+            <p id="feedback-improvement-text" class="feedback-text">
+              Davant de situacions complexes, tendeixes a identificar el concepte ràpidament; aprofundeix encara més en el mecanisme causal del "perquè".
+            </p>
+          </div>
+
+          <div class="feedback-block evolution">
+            <div class="feedback-heading">
+              <span>📊 EVOLUCIÓ OBSERVADA</span>
+            </div>
+            <p id="feedback-evolution-text" class="feedback-text">
+              S'observa una clara progressió: has reduït la necessitat de reintents a mesura que avançaves i has aprofitat el feedback per refinar el teu raonament.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- Full Dossier -->
       <div class="card" id="printable-dossier" style="border-color: #c7d2fe;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 0.85rem; margin-bottom: 1rem;">
@@ -956,6 +1171,128 @@
         </button>
       </div>
     </section>
+
+    <!-- ============================================================
+         MODAL: VISTA DEL PROFESSOR (PANEL D'ANALÍTICA DOCENT)
+         ============================================================ -->
+    <div class="modal-overlay" id="teacher-modal">
+      <div class="modal-card teacher-modal-card">
+        <div class="teacher-modal-header">
+          <div>
+            <div class="teacher-tagline">PANEL D'AVALUACIÓ FORMATIVA</div>
+            <h3 style="color: #0f172a; font-size: 1.35rem; font-weight: 800; margin: 0.2rem 0;">👨‍🏫 VISTA DEL PROFESSOR: Diagnòstic d'Aprenentatge</h3>
+            <p style="color: #64748b; font-size: 0.88rem; margin: 0;">Telemetria educativa respectuosa del procés cognitiu de l'alumne/a.</p>
+          </div>
+          <button onclick="app.closeTeacherModal()" class="close-modal-btn" title="Tancar">✕</button>
+        </div>
+
+        <div class="teacher-modal-body">
+          <!-- Summary Pills -->
+          <div class="teacher-stats-row">
+            <div class="tstat-card">
+              <span class="tstat-label">ALUMNE/A</span>
+              <span class="tstat-val" id="tstat-student-name">Estudiant</span>
+            </div>
+            <div class="tstat-card">
+              <span class="tstat-label">XP TOTAL</span>
+              <span class="tstat-val" id="tstat-xp">0 XP</span>
+            </div>
+            <div class="tstat-card">
+              <span class="tstat-label">DEMANDA ASSOLIDA</span>
+              <span class="tstat-val" id="tstat-demand">Nivell 5/5</span>
+            </div>
+            <div class="tstat-card">
+              <span class="tstat-label">TEMPS MITJÀ / TASCA</span>
+              <span class="tstat-val" id="tstat-avg-time">-- s</span>
+            </div>
+            <div class="tstat-card">
+              <span class="tstat-label">INTENTS MITJANS</span>
+              <span class="tstat-val" id="tstat-avg-attempts">--</span>
+            </div>
+            <div class="tstat-card">
+              <span class="tstat-label">DISTRACCIONS (BLUR)</span>
+              <span class="tstat-val" id="tstat-distractions">0</span>
+            </div>
+          </div>
+
+          <!-- Concept Status Breakdown Table -->
+          <div class="teacher-section">
+            <h4 class="tsection-title">📊 ESTAT DE CONSOLIDACIÓ DELS CONCEPTES CLAU</h4>
+            <div class="concepts-table-wrap">
+              <table class="concepts-table">
+                <thead>
+                  <tr>
+                    <th>Concepte Psicològic</th>
+                    <th>Àrea Cerebral</th>
+                    <th>Estat de Consolidació</th>
+                    <th>Rigor Justificatiu</th>
+                    <th>Intents</th>
+                  </tr>
+                </thead>
+                <tbody id="teacher-concepts-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Multidimensional Indicators Detail -->
+          <div class="teacher-section">
+            <h4 class="tsection-title">📐 DESGLOSSAMENT D'INDICADORS (0 a 100)</h4>
+            <div class="teacher-indicators-grid">
+              <div class="tind-item">
+                <span class="tind-title">Rigor Global</span>
+                <span class="tind-score" id="tind-rigor">--</span>
+                <small class="tind-note">0: No justificat · 1: Identificació · 2: Justificació parcial · 3: Rigor causal alt</small>
+              </div>
+              <div class="tind-item">
+                <span class="tind-title">Integració</span>
+                <span class="tind-score" id="tind-integracio">--</span>
+                <small class="tind-note">Connexió entre experiments sensorials, esquemes i context</small>
+              </div>
+              <div class="tind-item">
+                <span class="tind-title">Coherència</span>
+                <span class="tind-score" id="tind-coherencia">--</span>
+                <small class="tind-note">No contradiccions entre teories i decisions pràctiques</small>
+              </div>
+              <div class="tind-item">
+                <span class="tind-title">Autonomia</span>
+                <span class="tind-score" id="tind-autonomia">--</span>
+                <small class="tind-note">Capacitat de progressar sense necessitar pistes recurrents</small>
+              </div>
+              <div class="tind-item">
+                <span class="tind-title">Capacitat de Revisió</span>
+                <span class="tind-score" id="tind-revisio">--</span>
+                <small class="tind-note">Millora observada quan revisa després del feedback</small>
+              </div>
+              <div class="tind-item">
+                <span class="tind-title">Transferència</span>
+                <span class="tind-score" id="tind-transfer">--</span>
+                <small class="tind-note">Aplicació a la situació nova d'estudi personal</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Epistemological Caution Notice -->
+          <div class="teacher-pedagogical-notice">
+            <strong>⚠️ Recordatori Pedagògic i Deontològic:</strong>
+            <p>
+              Aquests indicadors representen <em>patrons de comportament observats</em> en aquest entorn interactiu i <strong>no constitueixen un diagnòstic psicològic ni d'intel·ligència</strong>. S'han de fer servir exclusivament amb finalitat formativa per acompanyar l'aprenentatge de l'alumne.
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="teacher-modal-actions">
+            <button class="btn btn-secondary" onclick="app.copyTeacherJSON()">
+              📋 Copia dades en JSON (per a rúbrica / registre)
+            </button>
+            <button class="btn btn-primary" onclick="app.closeTeacherModal()">
+              Tancar Vista
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ============================================================
          SECCIÓ FIXA: MAPA NEURAL CEREBRAL (SKILL TREE VIDEOJOC)
